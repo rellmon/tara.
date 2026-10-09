@@ -28,3 +28,39 @@ export function formatTime(time: string): string {
   const parsed = parse(time, 'HH:mm', new Date())
   return isValid(parsed) ? format(parsed, 'h:mm a') : time
 }
+
+// An activity with no end time is treated as a single moment.
+function effectiveEnd(activity: ItineraryActivity): string {
+  return activity.endTime !== '' ? activity.endTime : activity.startTime
+}
+
+export function activitiesOverlap(
+  a: ItineraryActivity,
+  b: ItineraryActivity,
+): boolean {
+  if (a.startTime === b.startTime) return true
+
+  return a.startTime < effectiveEnd(b) && b.startTime < effectiveEnd(a)
+}
+
+// Maps an activity's id to the activities it overlaps with.
+// Pass activities from a single day only.
+export function findOverlaps(
+  activities: ItineraryActivity[],
+): Record<string, ItineraryActivity[]> {
+  const result: Record<string, ItineraryActivity[]> = {}
+
+  for (let i = 0; i < activities.length; i++) {
+    for (let j = i + 1; j < activities.length; j++) {
+      const a = activities[i]
+      const b = activities[j]
+
+      if (activitiesOverlap(a, b)) {
+        result[a.id] = [...(result[a.id] ?? []), b]
+        result[b.id] = [...(result[b.id] ?? []), a]
+      }
+    }
+  }
+
+  return result
+}
