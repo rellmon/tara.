@@ -66,3 +66,33 @@ export function getCostPerPerson(total: number, travelerCount: number): number {
 
   return Math.ceil(toCentavos(total) / travelerCount) / 100
 }
+
+// Average per day, rounded to the nearest centavo. Returns 0 for no days.
+export function getAveragePerDay(total: number, dayCount: number): number {
+  if (!Number.isInteger(dayCount) || dayCount < 1) return 0
+
+  return Math.round(toCentavos(total) / dayCount) / 100
+}
+
+// Total estimated activity cost for each of the trip's days.
+export function getActivityCostByDay(
+  tripId: string,
+  activities: ItineraryActivity[],
+  days: string[],
+): Record<string, number> {
+  const centavos: Record<string, number> = {}
+  for (const day of days) {
+    centavos[day] = 0
+  }
+
+  for (const activity of activities) {
+    if (activity.tripId !== tripId || !(activity.date in centavos)) continue
+    centavos[activity.date] += toCentavos(activity.estimatedCost)
+  }
+
+  const result: Record<string, number> = {}
+  for (const day of days) {
+    result[day] = centavos[day] / 100
+  }
+  return result
+}

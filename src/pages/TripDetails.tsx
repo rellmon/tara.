@@ -7,6 +7,7 @@ import type { ItineraryActivity } from '../types/itinerary'
 import type { Trip } from '../types/trip'
 import { formatCurrency, formatDateRange } from '../utils/format'
 import EstimatedBreakdown from '../components/budget/EstimatedBreakdown'
+import DailyBudget from '../components/budget/DailyBudget'
 
 interface TripDetailsProps {
   trips: Trip[]
@@ -146,6 +147,12 @@ function TripDetails({
       </dl>
 
       <EstimatedBreakdown
+        trip={trip}
+        activities={activities}
+        budgetItems={budgetItems}
+      />
+
+      <DailyBudget
         trip={trip}
         activities={activities}
         budgetItems={budgetItems}
