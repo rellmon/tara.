@@ -4,6 +4,8 @@ import Button from '../ui/Button'
 import { ACTIVITY_CATEGORIES } from '../../types/itinerary'
 import type { ActivityCategory } from '../../types/itinerary'
 import { formatDayLabel } from '../../utils/itinerary'
+import { validateActivity } from '../../utils/validateActivity'
+import type { ActivityFormErrors } from '../../utils/validateActivity'
 
 export interface ActivityFormValues {
   date: string
@@ -34,6 +36,15 @@ function categoryLabel(category: ActivityCategory): string {
   return spaced.charAt(0).toUpperCase() + spaced.slice(1)
 }
 
+function FieldError({ id, message }: { id: string; message?: string }) {
+  if (!message) return null
+  return (
+    <p id={id} className="mt-1 text-sm text-red-700">
+      {message}
+    </p>
+  )
+}
+
 function ActivityForm({
   days,
   defaultDate,
@@ -59,11 +70,12 @@ function ActivityForm({
   )
   const [notes, setNotes] = useState(initialValues?.notes ?? '')
   const [url, setUrl] = useState(initialValues?.url ?? '')
+  const [errors, setErrors] = useState<ActivityFormErrors>({})
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    onSubmit({
+    const values: ActivityFormValues = {
       date,
       title: title.trim(),
       locationName: locationName.trim(),
@@ -74,7 +86,14 @@ function ActivityForm({
       category,
       notes: notes.trim(),
       url: url.trim(),
-    })
+    }
+
+    const validationErrors = validateActivity(values, days)
+    setErrors(validationErrors)
+
+    if (Object.keys(validationErrors).length > 0) return
+
+    onSubmit(values)
   }
 
   return (
@@ -89,8 +108,11 @@ function ActivityForm({
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Surf lesson"
+          aria-invalid={errors.title ? true : undefined}
+          aria-describedby={errors.title ? 'title-error' : undefined}
           className={inputClasses}
         />
+        <FieldError id="title-error" message={errors.title} />
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">
@@ -102,6 +124,8 @@ function ActivityForm({
             id="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
+            aria-invalid={errors.date ? true : undefined}
+            aria-describedby={errors.date ? 'date-error' : undefined}
             className={inputClasses}
           >
             {days.map((day, index) => (
@@ -110,6 +134,7 @@ function ActivityForm({
               </option>
             ))}
           </select>
+          <FieldError id="date-error" message={errors.date} />
         </div>
         <div>
           <label htmlFor="category" className="text-sm font-medium">
@@ -140,8 +165,11 @@ function ActivityForm({
             type="time"
             value={startTime}
             onChange={(e) => setStartTime(e.target.value)}
+            aria-invalid={errors.startTime ? true : undefined}
+            aria-describedby={errors.startTime ? 'startTime-error' : undefined}
             className={inputClasses}
           />
+          <FieldError id="startTime-error" message={errors.startTime} />
         </div>
         <div>
           <label htmlFor="endTime" className="text-sm font-medium">
@@ -152,8 +180,11 @@ function ActivityForm({
             type="time"
             value={endTime}
             onChange={(e) => setEndTime(e.target.value)}
+            aria-invalid={errors.endTime ? true : undefined}
+            aria-describedby={errors.endTime ? 'endTime-error' : undefined}
             className={inputClasses}
           />
+          <FieldError id="endTime-error" message={errors.endTime} />
         </div>
       </div>
 
@@ -182,8 +213,13 @@ function ActivityForm({
             value={estimatedCost}
             onChange={(e) => setEstimatedCost(e.target.value)}
             placeholder="0"
+            aria-invalid={errors.estimatedCost ? true : undefined}
+            aria-describedby={
+              errors.estimatedCost ? 'estimatedCost-error' : undefined
+            }
             className={inputClasses}
           />
+          <FieldError id="estimatedCost-error" message={errors.estimatedCost} />
         </div>
       </div>
 
@@ -223,8 +259,11 @@ function ActivityForm({
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           placeholder="https://"
+          aria-invalid={errors.url ? true : undefined}
+          aria-describedby={errors.url ? 'url-error' : undefined}
           className={inputClasses}
         />
+        <FieldError id="url-error" message={errors.url} />
       </div>
 
       <Button type="submit" size="lg">
