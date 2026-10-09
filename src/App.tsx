@@ -39,7 +39,7 @@ function App() {
     <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard" element={<Dashboard trips={trips} />} />
         <Route path="/trips" element={<Trips trips={trips} />} />
         <Route path="/trips/new" element={<CreateTrip onAddTrip={addTrip} />} />
         <Route

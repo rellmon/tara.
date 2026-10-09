@@ -1,4 +1,14 @@
-function Dashboard() {
+import { Link } from 'react-router-dom'
+import TripCard from '../components/trips/TripCard'
+import { getUpcomingTrips } from '../utils/tripFilters'
+import type { Trip } from '../types/trip'
+
+interface DashboardProps {
+  trips: Trip[]
+}
+
+function Dashboard({ trips }: DashboardProps) {
+    const upcomingTrips = getUpcomingTrips(trips)
   return (
     <div className="space-y-10">
       {/* Welcome */}
@@ -37,15 +47,30 @@ function Dashboard() {
       {/* Upcoming trips + quick actions */}
       <div className="grid gap-8 lg:grid-cols-3">
         <section aria-labelledby="upcoming-heading" className="lg:col-span-2">
-          <h2
-            id="upcoming-heading"
-            className="font-display text-2xl font-bold text-brand-900"
-          >
-            Upcoming trips
-          </h2>
-          <div className="mt-4 rounded-2xl border border-dashed border-line p-8 text-center text-muted">
-            Upcoming trips will appear here.
-          </div>
+            <h2
+                id="upcoming-heading"
+                className="font-display text-2xl font-bold text-brand-900"
+            >
+                Upcoming trips
+            </h2>
+
+            {upcomingTrips.length === 0 ? (
+                <div className="mt-4 rounded-2xl border border-dashed border-line p-8 text-center">
+                <p className="text-muted">No upcoming trips yet.</p>
+                <Link
+                    to="/trips/new"
+                    className="mt-4 inline-block rounded-full bg-brand-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-brand-700"
+                >
+                    Plan a trip
+                </Link>
+                </div>
+            ) : (
+                <div className="mt-4 grid gap-5 sm:grid-cols-2">
+                {upcomingTrips.map((trip) => (
+                    <TripCard key={trip.id} trip={trip} />
+                ))}
+                </div>
+            )}
         </section>
 
         <section aria-labelledby="actions-heading">
