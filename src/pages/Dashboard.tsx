@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import TripCard from '../components/trips/TripCard'
-import { getUpcomingTrips } from '../utils/tripFilters'
+import { getTripSummary, getUpcomingTrips } from '../utils/tripFilters'
+import { formatCurrency } from '../utils/format'
 import type { Trip } from '../types/trip'
 
 interface DashboardProps {
@@ -9,6 +10,16 @@ interface DashboardProps {
 
 function Dashboard({ trips }: DashboardProps) {
     const upcomingTrips = getUpcomingTrips(trips)
+    const summary = getTripSummary(trips)
+        const summaryCards = [
+        { label: 'Total trips', value: String(summary.total) },
+        { label: 'Upcoming', value: String(summary.upcoming) },
+        { label: 'Completed', value: String(summary.completed) },
+        {
+            label: 'Estimated spending',
+            value: formatCurrency(summary.estimatedSpending),
+        },
+    ]
   return (
     <div className="space-y-10">
       {/* Welcome */}
@@ -28,19 +39,17 @@ function Dashboard({ trips }: DashboardProps) {
           Summary
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {['Total trips', 'Upcoming', 'Completed', 'Estimated spending'].map(
-            (label) => (
-              <div
-                key={label}
+            {summaryCards.map((card) => (
+                <div
+                key={card.label}
                 className="rounded-2xl border border-line bg-white p-5"
-              >
-                <p className="text-sm text-muted">{label}</p>
+                >
+                <p className="text-sm text-muted">{card.label}</p>
                 <p className="mt-1 font-display text-3xl font-bold text-brand-900">
-                  –
+                    {card.value}
                 </p>
-              </div>
-            ),
-          )}
+                </div>
+            ))}
         </div>
       </section>
 

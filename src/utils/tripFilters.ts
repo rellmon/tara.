@@ -16,3 +16,29 @@ export function getUpcomingTrips(trips: Trip[]): Trip[] {
         parseISO(a.startDate).getTime() - parseISO(b.startDate).getTime(),
     )
 }
+
+export interface TripSummary {
+  total: number
+  upcoming: number
+  completed: number
+  estimatedSpending: number
+}
+
+export function getTripSummary(trips: Trip[]): TripSummary {
+  const today = todayString()
+
+  const upcomingTrips = trips.filter((trip) => trip.endDate >= today)
+  const completedTrips = trips.filter((trip) => trip.endDate < today)
+
+  const estimatedSpending = upcomingTrips.reduce(
+    (sum, trip) => sum + trip.travelerCount * trip.estimatedBudgetPerPerson,
+    0,
+  )
+
+  return {
+    total: trips.length,
+    upcoming: upcomingTrips.length,
+    completed: completedTrips.length,
+    estimatedSpending,
+  }
+}
