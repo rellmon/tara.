@@ -9,11 +9,18 @@ import {
   getEstimatedBreakdown,
 } from '../../utils/budget'
 import { formatCurrency, formatCurrencyExact } from '../../utils/format'
+import { budgetCategoryColors } from './budgetCategoryStyles'
+import DonutChart from './DonutChart'
 
 interface EstimatedBreakdownProps {
   trip: Trip
   activities: ItineraryActivity[]
   budgetItems: BudgetItem[]
+}
+
+function formatShare(amount: number, total: number): string {
+  const percent = (amount / total) * 100
+  return percent < 1 ? '<1%' : `${Math.round(percent)}%`
 }
 
 function EstimatedBreakdown({
@@ -55,29 +62,41 @@ function EstimatedBreakdown({
         </p>
       ) : (
         <div className="mt-4 rounded-2xl border border-line bg-white p-5">
-          <ul className="space-y-4">
-            {rows.map((row) => (
-              <li key={row.category}>
-                <div className="flex items-baseline justify-between gap-3 text-sm">
-                  <span className="font-medium text-charcoal">
+          <div className="flex flex-col items-center gap-6 sm:flex-row">
+            <DonutChart
+              segments={rows.map((row) => ({
+                key: row.category,
+                value: row.amount,
+                strokeClass: budgetCategoryColors[row.category].stroke,
+              }))}
+              ariaLabel="Estimated cost breakdown by category"
+              centerLabel="Total estimated"
+              centerValue={formatCurrency(total)}
+            />
+
+            <ul className="w-full space-y-3">
+              {rows.map((row) => (
+                <li
+                  key={row.category}
+                  className="flex items-center gap-3 text-sm"
+                >
+                  <span
+                    className={`h-3 w-3 shrink-0 rounded-full ${budgetCategoryColors[row.category].swatch}`}
+                    aria-hidden="true"
+                  />
+                  <span className="min-w-0 flex-1 font-medium text-charcoal">
                     {BUDGET_CATEGORY_LABELS[row.category]}
                   </span>
-                  <span className="font-semibold text-brand-900">
+                  <span className="text-muted">
+                    {formatShare(row.amount, total)}
+                  </span>
+                  <span className="w-24 text-right font-semibold text-brand-900">
                     {formatCurrency(row.amount)}
                   </span>
-                </div>
-                <div
-                  className="mt-1.5 h-2 overflow-hidden rounded-full bg-sage"
-                  aria-hidden="true"
-                >
-                  <div
-                    className="h-full rounded-full bg-brand-500"
-                    style={{ width: `${(row.amount / total) * 100}%` }}
-                  />
-                </div>
-              </li>
-            ))}
-          </ul>
+                </li>
+              ))}
+            </ul>
+          </div>
 
           <div className="mt-5 flex items-baseline justify-between gap-3 border-t border-line pt-4">
             <span className="font-medium text-charcoal">Total estimated</span>
