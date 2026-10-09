@@ -1,8 +1,13 @@
+import { AlertTriangle, CheckCircle2 } from 'lucide-react'
 import { BUDGET_CATEGORIES, BUDGET_CATEGORY_LABELS } from '../../types/budget'
 import type { BudgetItem } from '../../types/budget'
 import type { ItineraryActivity } from '../../types/itinerary'
 import type { Trip } from '../../types/trip'
-import { getCostPerPerson, getEstimatedBreakdown } from '../../utils/budget'
+import {
+  getBudgetStatus,
+  getCostPerPerson,
+  getEstimatedBreakdown,
+} from '../../utils/budget'
 import { formatCurrency, formatCurrencyExact } from '../../utils/format'
 
 interface EstimatedBreakdownProps {
@@ -22,6 +27,10 @@ function EstimatedBreakdown({
     budgetItems,
   )
   const perPerson = getCostPerPerson(total, trip.travelerCount)
+
+  const plannedTotal = trip.travelerCount * trip.estimatedBudgetPerPerson
+  const status = getBudgetStatus(plannedTotal, total)
+  const barWidth = Math.min(status.percentUsed, 100)
 
   // Only categories with a cost, largest first.
   const rows = BUDGET_CATEGORIES.filter((category) => byCategory[category] > 0)
@@ -75,6 +84,56 @@ function EstimatedBreakdown({
             <span className="font-display text-2xl font-bold text-brand-900">
               {formatCurrency(total)}
             </span>
+          </div>
+
+          <div
+            className={`mt-4 rounded-xl p-4 ${
+              status.isOver ? 'bg-amber-50' : 'bg-brand-50'
+            }`}
+          >
+            <div className="flex items-start gap-2">
+              {status.isOver ? (
+                <AlertTriangle
+                  size={18}
+                  className="mt-0.5 shrink-0 text-amber-800"
+                  aria-hidden="true"
+                />
+              ) : (
+                <CheckCircle2
+                  size={18}
+                  className="mt-0.5 shrink-0 text-brand-600"
+                  aria-hidden="true"
+                />
+              )}
+              <div className="min-w-0">
+                <p
+                  className={`font-medium ${
+                    status.isOver ? 'text-amber-900' : 'text-brand-900'
+                  }`}
+                >
+                  {status.isOver ? 'Over budget by ' : 'Remaining budget: '}
+                  <span className="font-display text-lg font-bold">
+                    {formatCurrency(Math.abs(status.remaining))}
+                  </span>
+                </p>
+                <p className="mt-0.5 text-sm text-muted">
+                  {plannedTotal > 0
+                    ? `${Math.round(status.percentUsed)}% of your ${formatCurrency(plannedTotal)} planned budget (estimates only)`
+                    : 'No planned budget set for this trip.'}
+                </p>
+              </div>
+            </div>
+            <div
+              className="mt-3 h-2 overflow-hidden rounded-full bg-white"
+              aria-hidden="true"
+            >
+              <div
+                className={`h-full rounded-full ${
+                  status.isOver ? 'bg-amber-500' : 'bg-brand-500'
+                }`}
+                style={{ width: `${barWidth}%` }}
+              />
+            </div>
           </div>
 
           <dl className="mt-4 grid gap-3 sm:grid-cols-2">

@@ -96,3 +96,31 @@ export function getActivityCostByDay(
   }
   return result
 }
+
+export interface BudgetStatus {
+  remaining: number // negative when over budget
+  percentUsed: number // can exceed 100
+  isOver: boolean
+}
+
+export function getBudgetStatus(
+  planned: number,
+  estimated: number,
+): BudgetStatus {
+  const plannedCentavos = toCentavos(planned)
+  const estimatedCentavos = toCentavos(estimated)
+  const remainingCentavos = plannedCentavos - estimatedCentavos
+
+  let percentUsed = 0
+  if (plannedCentavos > 0) {
+    percentUsed = (estimatedCentavos / plannedCentavos) * 100
+  } else if (estimatedCentavos > 0) {
+    percentUsed = 100
+  }
+
+  return {
+    remaining: remainingCentavos / 100,
+    percentUsed,
+    isOver: remainingCentavos < 0,
+  }
+}
