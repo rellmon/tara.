@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import Layout from './components/layout/Layout'
 import Home from './pages/Home'
@@ -6,12 +6,16 @@ import Trips from './pages/Trips'
 import CreateTrip from './pages/CreateTrip'
 import TripDetails from './pages/TripDetails'
 import EditTrip from './pages/EditTrip'
-import { sampleTrips } from './data/sampleTrips'
 import type { Trip } from './types/trip'
+import { loadTrips, saveTrips } from './services/tripStorage'
 
 function App() {
-  const [trips, setTrips] = useState<Trip[]>(sampleTrips)
+  const [trips, setTrips] = useState<Trip[]>(loadTrips)
 
+  useEffect(() => {
+    saveTrips(trips)
+  }, [trips])
+  
   function addTrip(trip: Trip) {
     setTrips((previousTrips) => [trip, ...previousTrips])
   }
