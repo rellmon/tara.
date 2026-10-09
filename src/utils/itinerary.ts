@@ -64,3 +64,68 @@ export function findOverlaps(
 
   return result
 }
+
+// Insert a new activity into the list at the position that fits its start time
+// among the activities of the same trip and day.
+export function insertActivityByTime(
+  activities: ItineraryActivity[],
+  newActivity: ItineraryActivity,
+): ItineraryActivity[] {
+  const result = [...activities]
+  let firstSameDay = -1
+  let lastNotLater = -1
+
+  result.forEach((activity, index) => {
+    if (
+      activity.tripId !== newActivity.tripId ||
+      activity.date !== newActivity.date
+    ) {
+      return
+    }
+    if (firstSameDay === -1) firstSameDay = index
+    if (activity.startTime <= newActivity.startTime) lastNotLater = index
+  })
+
+  let insertAt = result.length
+  if (lastNotLater !== -1) {
+    insertAt = lastNotLater + 1
+  } else if (firstSameDay !== -1) {
+    insertAt = firstSameDay
+  }
+
+  result.splice(insertAt, 0, newActivity)
+  return result
+}
+
+// Swap an activity with its neighbor on the same day.
+// direction: -1 moves it up, 1 moves it down.
+export function moveActivity(
+  activities: ItineraryActivity[],
+  activityId: string,
+  direction: -1 | 1,
+): ItineraryActivity[] {
+  const target = activities.find((activity) => activity.id === activityId)
+  if (!target) return activities
+
+  // Positions in the full list that belong to this trip and day.
+  const slots: number[] = []
+  activities.forEach((activity, index) => {
+    if (activity.tripId === target.tripId && activity.date === target.date) {
+      slots.push(index)
+    }
+  })
+
+  const position = slots.findIndex((index) => activities[index].id === activityId)
+  const neighborPosition = position + direction
+  if (neighborPosition < 0 || neighborPosition >= slots.length) {
+    return activities
+  }
+
+  const result = [...activities]
+  const a = slots[position]
+  const b = slots[neighborPosition]
+  const temp = result[a]
+  result[a] = result[b]
+  result[b] = temp
+  return result
+}

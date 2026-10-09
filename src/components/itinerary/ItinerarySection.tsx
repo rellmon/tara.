@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
-import { AlertTriangle, Clock, MapPin } from 'lucide-react'
+import { AlertTriangle, ArrowDown, ArrowUp, Clock, MapPin } from 'lucide-react'
+import { categoryConfig } from './categoryConfig'
 import type { ItineraryActivity } from '../../types/itinerary'
 import type { Trip } from '../../types/trip'
 import { formatCurrency } from '../../utils/format'
@@ -8,20 +9,23 @@ import {
   formatDayLabel,
   formatTime,
   getTripDays,
-  sortByStartTime,
 } from '../../utils/itinerary'
-import { categoryConfig } from './categoryConfig'
 
 interface ItinerarySectionProps {
   trip: Trip
   activities: ItineraryActivity[]
   onDeleteActivity: (activityId: string) => void
+  onMoveActivity: (activityId: string, direction: -1 | 1) => void
 }
+
+const moveButtonClasses =
+  'inline-flex h-10 w-10 items-center justify-center rounded-full text-brand-700 transition-colors hover:bg-brand-50 focus-visible:outline-2 focus-visible:outline-brand-600 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent'
 
 function ItinerarySection({
   trip,
   activities,
   onDeleteActivity,
+  onMoveActivity,
 }: ItinerarySectionProps) {
   const days = getTripDays(trip.startDate, trip.endDate)
   const tripActivities = activities.filter(
@@ -48,8 +52,9 @@ function ItinerarySection({
 
       <div className="mt-6 space-y-8">
         {days.map((day, index) => {
-          const dayActivities = sortByStartTime(
-            tripActivities.filter((activity) => activity.date === day),
+          // Array order is the display order.
+          const dayActivities = tripActivities.filter(
+            (activity) => activity.date === day,
           )
           const overlaps = findOverlaps(dayActivities)
 
@@ -77,9 +82,10 @@ function ItinerarySection({
                 </p>
               ) : (
                 <ul className="mt-3 space-y-3">
-                  {dayActivities.map((activity) => {
+                  {dayActivities.map((activity, position) => {
                     const conflicts = overlaps[activity.id] ?? []
-                    const category = categoryConfig[activity.category] ?? categoryConfig.other
+                    const category =
+                      categoryConfig[activity.category] ?? categoryConfig.other
 
                     return (
                       <li
@@ -136,7 +142,7 @@ function ItinerarySection({
                           </p>
                         )}
 
-                        <div className="mt-3 flex gap-1">
+                        <div className="mt-3 flex flex-wrap items-center gap-1">
                           <Link
                             to={`/trips/${trip.id}/activities/${activity.id}/edit`}
                             className="rounded-full px-3 py-1.5 text-sm font-medium text-brand-700 transition-colors hover:bg-brand-50 focus-visible:outline-2 focus-visible:outline-brand-600"
@@ -150,6 +156,27 @@ function ItinerarySection({
                           >
                             Delete
                           </button>
+
+                          <div className="ml-auto flex gap-1">
+                            <button
+                              type="button"
+                              onClick={() => onMoveActivity(activity.id, -1)}
+                              disabled={position === 0}
+                              aria-label={`Move ${activity.title} up`}
+                              className={moveButtonClasses}
+                            >
+                              <ArrowUp size={18} aria-hidden="true" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => onMoveActivity(activity.id, 1)}
+                              disabled={position === dayActivities.length - 1}
+                              aria-label={`Move ${activity.title} down`}
+                              className={moveButtonClasses}
+                            >
+                              <ArrowDown size={18} aria-hidden="true" />
+                            </button>
+                          </div>
                         </div>
                       </li>
                     )

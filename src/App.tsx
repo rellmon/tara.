@@ -11,6 +11,7 @@ import AddActivity from './pages/AddActivity'
 import EditActivity from './pages/EditActivity'
 import { loadActivities, saveActivities } from './services/activityStorage'
 import { loadTrips, saveTrips } from './services/tripStorage'
+import { insertActivityByTime, moveActivity } from './utils/itinerary'
 import type { ItineraryActivity } from './types/itinerary'
 import type { Trip } from './types/trip'
 
@@ -49,20 +50,48 @@ function App() {
   }
 
   function addActivity(activity: ItineraryActivity) {
-    setActivities((previousActivities) => [...previousActivities, activity])
+    setActivities((previousActivities) =>
+      insertActivityByTime(previousActivities, activity),
+    )
   }
 
   function updateActivity(updatedActivity: ItineraryActivity) {
-    setActivities((previousActivities) =>
-      previousActivities.map((activity) =>
-        activity.id === updatedActivity.id ? updatedActivity : activity,
-      ),
-    )
+    setActivities((previousActivities) => {
+      const existing = previousActivities.find(
+        (activity) => activity.id === updatedActivity.id,
+      )
+      if (!existing) return previousActivities
+
+      // If the day or start time changed, put it where it now fits.
+      // Otherwise keep its current position (it may have been reordered).
+      const needsReposition =
+        existing.date !== updatedActivity.date ||
+        existing.startTime !== updatedActivity.startTime
+
+      if (!needsReposition) {
+        return previousActivities.map((activity) =>
+          activity.id === updatedActivity.id ? updatedActivity : activity,
+        )
+      }
+
+      return insertActivityByTime(
+        previousActivities.filter(
+          (activity) => activity.id !== updatedActivity.id,
+        ),
+        updatedActivity,
+      )
+    })
   }
 
   function deleteActivity(activityId: string) {
     setActivities((previousActivities) =>
       previousActivities.filter((activity) => activity.id !== activityId),
+    )
+  }
+
+  function handleMoveActivity(activityId: string, direction: -1 | 1) {
+    setActivities((previousActivities) =>
+      moveActivity(previousActivities, activityId, direction),
     )
   }
 
@@ -81,6 +110,7 @@ function App() {
               activities={activities}
               onDeleteTrip={deleteTrip}
               onDeleteActivity={deleteActivity}
+              onMoveActivity={handleMoveActivity}
             />
           }
         />

@@ -10,6 +10,7 @@ interface TripDetailsProps {
   activities: ItineraryActivity[]
   onDeleteTrip: (tripId: string) => void
   onDeleteActivity: (activityId: string) => void
+  onMoveActivity: (activityId: string, direction: -1 | 1) => void
 }
 
 function TripDetails({
@@ -17,6 +18,7 @@ function TripDetails({
   activities,
   onDeleteTrip,
   onDeleteActivity,
+  onMoveActivity,
 }: TripDetailsProps) {
   const { tripId } = useParams()
   const navigate = useNavigate()
@@ -136,6 +138,7 @@ function TripDetails({
         trip={trip}
         activities={activities}
         onDeleteActivity={onDeleteActivity}
+        onMoveActivity={onMoveActivity}
       />
     </div>
   )
