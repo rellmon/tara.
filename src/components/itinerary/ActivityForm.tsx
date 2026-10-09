@@ -6,6 +6,7 @@ import type { ActivityCategory } from '../../types/itinerary'
 import { formatDayLabel } from '../../utils/itinerary'
 import { validateActivity } from '../../utils/validateActivity'
 import type { ActivityFormErrors } from '../../utils/validateActivity'
+import { categoryConfig } from './categoryConfig'
 
 export interface ActivityFormValues {
   date: string
@@ -30,11 +31,6 @@ interface ActivityFormProps {
 
 const inputClasses =
   'mt-1 w-full rounded-xl border border-line bg-white px-4 py-2.5 text-charcoal focus-visible:outline-2 focus-visible:outline-brand-600'
-
-function categoryLabel(category: ActivityCategory): string {
-  const spaced = category.replace('-', ' ')
-  return spaced.charAt(0).toUpperCase() + spaced.slice(1)
-}
 
 function FieldError({ id, message }: { id: string; message?: string }) {
   if (!message) return null
@@ -148,7 +144,7 @@ function ActivityForm({
           >
             {ACTIVITY_CATEGORIES.map((item) => (
               <option key={item} value={item}>
-                {categoryLabel(item)}
+                {categoryConfig[item].label}
               </option>
             ))}
           </select>

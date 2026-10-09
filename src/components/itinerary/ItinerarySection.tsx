@@ -10,6 +10,7 @@ import {
   getTripDays,
   sortByStartTime,
 } from '../../utils/itinerary'
+import { categoryConfig } from './categoryConfig'
 
 interface ItinerarySectionProps {
   trip: Trip
@@ -78,6 +79,7 @@ function ItinerarySection({
                 <ul className="mt-3 space-y-3">
                   {dayActivities.map((activity) => {
                     const conflicts = overlaps[activity.id] ?? []
+                    const category = categoryConfig[activity.category] ?? categoryConfig.other
 
                     return (
                       <li
@@ -92,8 +94,11 @@ function ItinerarySection({
                           <p className="break-words font-medium text-charcoal">
                             {activity.title}
                           </p>
-                          <span className="rounded-full bg-sage px-3 py-0.5 text-xs font-medium capitalize text-brand-900">
-                            {activity.category.replace('-', ' ')}
+                          <span
+                            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-0.5 text-xs font-medium ${category.classes}`}
+                          >
+                            <category.icon size={12} aria-hidden="true" />
+                            {category.label}
                           </span>
                         </div>
 
