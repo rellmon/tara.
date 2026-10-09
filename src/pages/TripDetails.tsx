@@ -1,0 +1,97 @@
+import { Link, useParams } from 'react-router-dom'
+import { ArrowLeft, CalendarDays, MapPin, Users, Wallet } from 'lucide-react'
+import type { Trip } from '../types/trip'
+import { formatCurrency, formatDateRange } from '../utils/format'
+
+interface TripDetailsProps {
+  trips: Trip[]
+}
+
+function TripDetails({ trips }: TripDetailsProps) {
+  const { tripId } = useParams()
+  const trip = trips.find((t) => t.id === tripId)
+
+  if (!trip) {
+    return (
+      <div className="py-16 text-center">
+        <h1 className="font-display text-3xl font-bold text-brand-900">
+          Trip not found
+        </h1>
+        <p className="mt-2 text-muted">
+          This trip doesn't exist or may have been removed.
+        </p>
+        <Link
+          to="/trips"
+          className="mt-6 inline-block rounded-full bg-brand-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-brand-700"
+        >
+          Back to My Trips
+        </Link>
+      </div>
+    )
+  }
+
+  const totalBudget = trip.travelerCount * trip.estimatedBudgetPerPerson
+
+  return (
+    <div>
+      <Link
+        to="/trips"
+        className="inline-flex items-center gap-2 text-sm font-medium text-brand-700 hover:text-brand-900"
+      >
+        <ArrowLeft size={16} aria-hidden="true" />
+        My Trips
+      </Link>
+
+      <div className="mt-4 flex h-48 items-end rounded-3xl bg-sage p-6">
+        <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-medium capitalize text-brand-900">
+          {trip.status}
+        </span>
+      </div>
+
+      <h1 className="mt-6 font-display text-4xl font-bold text-brand-900">
+        {trip.title}
+      </h1>
+      {trip.description && (
+        <p className="mt-2 max-w-2xl text-muted">{trip.description}</p>
+      )}
+
+      <dl className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="rounded-2xl border border-line bg-white p-5">
+          <dt className="flex items-center gap-2 text-sm text-muted">
+            <MapPin size={16} aria-hidden="true" />
+            Destination
+          </dt>
+          <dd className="mt-1 font-semibold">{trip.destination}</dd>
+        </div>
+        <div className="rounded-2xl border border-line bg-white p-5">
+          <dt className="flex items-center gap-2 text-sm text-muted">
+            <CalendarDays size={16} aria-hidden="true" />
+            Dates
+          </dt>
+          <dd className="mt-1 font-semibold">
+            {formatDateRange(trip.startDate, trip.endDate)}
+          </dd>
+        </div>
+        <div className="rounded-2xl border border-line bg-white p-5">
+          <dt className="flex items-center gap-2 text-sm text-muted">
+            <Users size={16} aria-hidden="true" />
+            Travelers
+          </dt>
+          <dd className="mt-1 font-semibold">{trip.travelerCount}</dd>
+        </div>
+        <div className="rounded-2xl border border-line bg-white p-5">
+          <dt className="flex items-center gap-2 text-sm text-muted">
+            <Wallet size={16} aria-hidden="true" />
+            Estimated budget
+          </dt>
+          <dd className="mt-1 font-semibold">{formatCurrency(totalBudget)}</dd>
+          <dd className="text-sm text-muted">
+            {formatCurrency(trip.estimatedBudgetPerPerson)} per person
+          </dd>
+        </div>
+      </dl>
+    </div>
+  )
+}
+
+export default TripDetails

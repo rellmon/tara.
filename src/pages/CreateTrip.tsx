@@ -1,9 +1,25 @@
+import { useNavigate } from 'react-router-dom'
 import TripForm from '../components/trips/TripForm'
 import type { TripFormValues } from '../components/trips/TripForm'
+import type { Trip } from '../types/trip'
 
-function CreateTrip() {
+interface CreateTripProps {
+  onAddTrip: (trip: Trip) => void
+}
+
+function CreateTrip({ onAddTrip }: CreateTripProps) {
+  const navigate = useNavigate()
+
   function handleSubmit(values: TripFormValues) {
-    console.log('Form submitted:', values)
+    const newTrip: Trip = {
+      id: crypto.randomUUID(),
+      coverImage: '',
+      status: 'planning',
+      ...values,
+    }
+
+    onAddTrip(newTrip)
+    navigate('/trips')
   }
 
   return (
