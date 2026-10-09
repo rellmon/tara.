@@ -200,7 +200,7 @@ function ActivityForm({
         </div>
         <div>
           <label htmlFor="estimatedCost" className="text-sm font-medium">
-            Estimated cost (₱)
+            Estimated cost, whole group (₱)
           </label>
           <input
             id="estimatedCost"
