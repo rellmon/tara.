@@ -13,13 +13,27 @@ import {
 interface ItinerarySectionProps {
   trip: Trip
   activities: ItineraryActivity[]
+  onDeleteActivity: (activityId: string) => void
 }
 
-function ItinerarySection({ trip, activities }: ItinerarySectionProps) {
+function ItinerarySection({
+  trip,
+  activities,
+  onDeleteActivity,
+}: ItinerarySectionProps) {
   const days = getTripDays(trip.startDate, trip.endDate)
   const tripActivities = activities.filter(
     (activity) => activity.tripId === trip.id,
   )
+
+  function handleDelete(activity: ItineraryActivity) {
+    const confirmed = window.confirm(
+      `Delete "${activity.title}"? This can't be undone.`,
+    )
+    if (!confirmed) return
+
+    onDeleteActivity(activity.id)
+  }
 
   return (
     <section aria-labelledby="itinerary-heading" className="mt-12">
@@ -92,13 +106,20 @@ function ItinerarySection({ trip, activities }: ItinerarySectionProps) {
                         )}
                       </div>
 
-                      <div className="mt-3">
+                      <div className="mt-3 flex gap-1">
                         <Link
                           to={`/trips/${trip.id}/activities/${activity.id}/edit`}
                           className="rounded-full px-3 py-1.5 text-sm font-medium text-brand-700 transition-colors hover:bg-brand-50 focus-visible:outline-2 focus-visible:outline-brand-600"
                         >
                           Edit
                         </Link>
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(activity)}
+                          className="rounded-full px-3 py-1.5 text-sm font-medium text-red-700 transition-colors hover:bg-red-50 focus-visible:outline-2 focus-visible:outline-red-700"
+                        >
+                          Delete
+                        </button>
                       </div>
                     </li>
                   ))}

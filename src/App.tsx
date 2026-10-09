@@ -60,6 +60,12 @@ function App() {
     )
   }
 
+  function deleteActivity(activityId: string) {
+    setActivities((previousActivities) =>
+      previousActivities.filter((activity) => activity.id !== activityId),
+    )
+  }
+
   return (
     <Routes>
       <Route element={<Layout />}>
@@ -74,6 +80,7 @@ function App() {
               trips={trips}
               activities={activities}
               onDeleteTrip={deleteTrip}
+              onDeleteActivity={deleteActivity}
             />
           }
         />

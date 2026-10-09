@@ -9,9 +9,15 @@ interface TripDetailsProps {
   trips: Trip[]
   activities: ItineraryActivity[]
   onDeleteTrip: (tripId: string) => void
+  onDeleteActivity: (activityId: string) => void
 }
 
-function TripDetails({ trips, activities, onDeleteTrip }: TripDetailsProps) {
+function TripDetails({
+  trips,
+  activities,
+  onDeleteTrip,
+  onDeleteActivity,
+}: TripDetailsProps) {
   const { tripId } = useParams()
   const navigate = useNavigate()
   const trip = trips.find((t) => t.id === tripId)
@@ -126,7 +132,11 @@ function TripDetails({ trips, activities, onDeleteTrip }: TripDetailsProps) {
         </div>
       </dl>
 
-      <ItinerarySection trip={trip} activities={activities} />
+      <ItinerarySection
+        trip={trip}
+        activities={activities}
+        onDeleteActivity={onDeleteActivity}
+      />
     </div>
   )
 }
