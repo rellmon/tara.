@@ -2,16 +2,19 @@ import { useEffect, useState } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import Layout from './components/layout/Layout'
 import Home from './pages/Home'
+import Dashboard from './pages/Dashboard'
 import Trips from './pages/Trips'
 import CreateTrip from './pages/CreateTrip'
 import TripDetails from './pages/TripDetails'
 import EditTrip from './pages/EditTrip'
-import type { Trip } from './types/trip'
+import { sampleActivities } from './data/sampleActivities'
 import { loadTrips, saveTrips } from './services/tripStorage'
-import Dashboard from './pages/Dashboard'
+import type { ItineraryActivity } from './types/itinerary'
+import type { Trip } from './types/trip'
 
 function App() {
   const [trips, setTrips] = useState<Trip[]>(loadTrips)
+  const [activities] = useState<ItineraryActivity[]>(sampleActivities)
 
   useEffect(() => {
     saveTrips(trips)
@@ -44,7 +47,13 @@ function App() {
         <Route path="/trips/new" element={<CreateTrip onAddTrip={addTrip} />} />
         <Route
           path="/trips/:tripId"
-          element={<TripDetails trips={trips} onDeleteTrip={deleteTrip} />}
+          element={
+            <TripDetails
+              trips={trips}
+              activities={activities}
+              onDeleteTrip={deleteTrip}
+            />
+          }
         />
         <Route
           path="/trips/:tripId/edit"

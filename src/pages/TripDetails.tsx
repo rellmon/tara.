@@ -1,14 +1,17 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, CalendarDays, MapPin, Users, Wallet } from 'lucide-react'
+import ItinerarySection from '../components/itinerary/ItinerarySection'
+import type { ItineraryActivity } from '../types/itinerary'
 import type { Trip } from '../types/trip'
 import { formatCurrency, formatDateRange } from '../utils/format'
 
 interface TripDetailsProps {
   trips: Trip[]
+  activities: ItineraryActivity[]
   onDeleteTrip: (tripId: string) => void
 }
 
-function TripDetails({ trips, onDeleteTrip }: TripDetailsProps) {
+function TripDetails({ trips, activities, onDeleteTrip }: TripDetailsProps) {
   const { tripId } = useParams()
   const navigate = useNavigate()
   const trip = trips.find((t) => t.id === tripId)
@@ -60,11 +63,13 @@ function TripDetails({ trips, onDeleteTrip }: TripDetailsProps) {
         </span>
       </div>
 
-      <h1 className="mt-6 font-display text-4xl font-bold text-brand-900">
+      <h1 className="mt-6 break-words font-display text-4xl font-bold text-brand-900">
         {trip.title}
       </h1>
       {trip.description && (
-        <p className="mt-2 max-w-2xl text-muted">{trip.description}</p>
+        <p className="mt-2 max-w-2xl break-words text-muted">
+          {trip.description}
+        </p>
       )}
 
       <div className="mt-5 flex flex-wrap gap-3">
@@ -89,7 +94,7 @@ function TripDetails({ trips, onDeleteTrip }: TripDetailsProps) {
             <MapPin size={16} aria-hidden="true" />
             Destination
           </dt>
-          <dd className="mt-1 font-semibold">{trip.destination}</dd>
+          <dd className="mt-1 break-words font-semibold">{trip.destination}</dd>
         </div>
         <div className="rounded-2xl border border-line bg-white p-5">
           <dt className="flex items-center gap-2 text-sm text-muted">
@@ -112,12 +117,16 @@ function TripDetails({ trips, onDeleteTrip }: TripDetailsProps) {
             <Wallet size={16} aria-hidden="true" />
             Estimated budget
           </dt>
-          <dd className="mt-1 font-semibold">{formatCurrency(totalBudget)}</dd>
+          <dd className="mt-1 break-words font-semibold">
+            {formatCurrency(totalBudget)}
+          </dd>
           <dd className="text-sm text-muted">
             {formatCurrency(trip.estimatedBudgetPerPerson)} per person
           </dd>
         </div>
       </dl>
+
+      <ItinerarySection trip={trip} activities={activities} />
     </div>
   )
 }
