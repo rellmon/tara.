@@ -11,6 +11,7 @@ import { sampleActivities } from './data/sampleActivities'
 import { loadTrips, saveTrips } from './services/tripStorage'
 import type { ItineraryActivity } from './types/itinerary'
 import type { Trip } from './types/trip'
+import AddActivity from './pages/AddActivity'
 
 function App() {
   const [trips, setTrips] = useState<Trip[]>(loadTrips)
@@ -60,6 +61,10 @@ function App() {
           element={<EditTrip trips={trips} onUpdateTrip={updateTrip} />}
         />
       </Route>
+      <Route
+        path="/trips/:tripId/activities/new"
+        element={<AddActivity trips={trips} />}
+      />
     </Routes>
   )
 }

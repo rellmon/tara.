@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { Clock, MapPin } from 'lucide-react'
 import type { ItineraryActivity } from '../../types/itinerary'
 import type { Trip } from '../../types/trip'
@@ -37,13 +38,21 @@ function ItinerarySection({ trip, activities }: ItinerarySectionProps) {
 
           return (
             <div key={day}>
-              <h3 className="font-semibold text-brand-900">
-                Day {index + 1}
-                <span className="font-normal text-muted">
-                  {' '}
-                  · {formatDayLabel(day)}
-                </span>
-              </h3>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h3 className="font-semibold text-brand-900">
+                    Day {index + 1}
+                    <span className="font-normal text-muted">
+                    {' '}
+                    · {formatDayLabel(day)}
+                    </span>
+                </h3>
+                <Link
+                    to={`/trips/${trip.id}/activities/new?date=${day}`}
+                    className="rounded-full px-4 py-2 text-sm font-medium text-brand-700 transition-colors hover:bg-brand-50 focus-visible:outline-2 focus-visible:outline-brand-600"
+                >
+                    + Add activity
+                </Link>
+               </div>
 
               {dayActivities.length === 0 ? (
                 <p className="mt-3 rounded-2xl border border-dashed border-line p-5 text-sm text-muted">
