@@ -8,6 +8,7 @@ import TripDetails from './pages/TripDetails'
 import EditTrip from './pages/EditTrip'
 import type { Trip } from './types/trip'
 import { loadTrips, saveTrips } from './services/tripStorage'
+import Dashboard from './pages/Dashboard'
 
 function App() {
   const [trips, setTrips] = useState<Trip[]>(loadTrips)
@@ -15,7 +16,7 @@ function App() {
   useEffect(() => {
     saveTrips(trips)
   }, [trips])
-  
+
   function addTrip(trip: Trip) {
     setTrips((previousTrips) => [trip, ...previousTrips])
   }
@@ -38,6 +39,7 @@ function App() {
     <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/trips" element={<Trips trips={trips} />} />
         <Route path="/trips/new" element={<CreateTrip onAddTrip={addTrip} />} />
         <Route
