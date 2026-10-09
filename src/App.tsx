@@ -10,12 +10,14 @@ import EditTrip from './pages/EditTrip'
 import AddActivity from './pages/AddActivity'
 import EditActivity from './pages/EditActivity'
 import { loadActivities, saveActivities } from './services/activityStorage'
+import { loadBudgetItems, saveBudgetItems } from './services/budgetStorage'
 import { loadTrips, saveTrips } from './services/tripStorage'
 import {
   insertActivityByTime,
   moveActivity,
   reorderActivity,
 } from './utils/itinerary'
+import type { BudgetItem } from './types/budget'
 import type { ItineraryActivity } from './types/itinerary'
 import type { Trip } from './types/trip'
 
@@ -23,6 +25,7 @@ function App() {
   const [trips, setTrips] = useState<Trip[]>(loadTrips)
   const [activities, setActivities] =
     useState<ItineraryActivity[]>(loadActivities)
+  const [budgetItems, setBudgetItems] = useState<BudgetItem[]>(loadBudgetItems)
 
   useEffect(() => {
     saveTrips(trips)
@@ -31,6 +34,10 @@ function App() {
   useEffect(() => {
     saveActivities(activities)
   }, [activities])
+
+  useEffect(() => {
+    saveBudgetItems(budgetItems)
+  }, [budgetItems])
 
   function addTrip(trip: Trip) {
     setTrips((previousTrips) => [trip, ...previousTrips])
@@ -50,6 +57,9 @@ function App() {
     )
     setActivities((previousActivities) =>
       previousActivities.filter((activity) => activity.tripId !== tripId),
+    )
+    setBudgetItems((previousItems) =>
+      previousItems.filter((item) => item.tripId !== tripId),
     )
   }
 
@@ -105,6 +115,16 @@ function App() {
     )
   }
 
+  function addBudgetItem(item: BudgetItem) {
+    setBudgetItems((previousItems) => [...previousItems, item])
+  }
+
+  function deleteBudgetItem(itemId: string) {
+    setBudgetItems((previousItems) =>
+      previousItems.filter((item) => item.id !== itemId),
+    )
+  }
+
   return (
     <Routes>
       <Route element={<Layout />}>
@@ -118,10 +138,13 @@ function App() {
             <TripDetails
               trips={trips}
               activities={activities}
+              budgetItems={budgetItems}
               onDeleteTrip={deleteTrip}
               onDeleteActivity={deleteActivity}
               onMoveActivity={handleMoveActivity}
               onReorderActivity={handleReorderActivity}
+              onAddBudgetItem={addBudgetItem}
+              onDeleteBudgetItem={deleteBudgetItem}
             />
           }
         />

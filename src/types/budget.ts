@@ -10,6 +10,16 @@ export const BUDGET_CATEGORIES = [
 
 export type BudgetCategory = (typeof BUDGET_CATEGORIES)[number]
 
+export const BUDGET_CATEGORY_LABELS: Record<BudgetCategory, string> = {
+  transportation: 'Transportation',
+  accommodation: 'Accommodation',
+  food: 'Food and drinks',
+  activities: 'Activities',
+  shopping: 'Shopping',
+  emergency: 'Emergency funds',
+  other: 'Other expenses',
+}
+
 export interface BudgetItem {
   id: string
   tripId: string

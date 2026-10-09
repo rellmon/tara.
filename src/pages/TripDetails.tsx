@@ -1,6 +1,8 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, CalendarDays, MapPin, Users, Wallet } from 'lucide-react'
+import BudgetSection from '../components/budget/BudgetSection'
 import ItinerarySection from '../components/itinerary/ItinerarySection'
+import type { BudgetItem } from '../types/budget'
 import type { ItineraryActivity } from '../types/itinerary'
 import type { Trip } from '../types/trip'
 import { formatCurrency, formatDateRange } from '../utils/format'
@@ -8,19 +10,25 @@ import { formatCurrency, formatDateRange } from '../utils/format'
 interface TripDetailsProps {
   trips: Trip[]
   activities: ItineraryActivity[]
+  budgetItems: BudgetItem[]
   onDeleteTrip: (tripId: string) => void
   onDeleteActivity: (activityId: string) => void
   onMoveActivity: (activityId: string, direction: -1 | 1) => void
   onReorderActivity: (activeId: string, overId: string) => void
+  onAddBudgetItem: (item: BudgetItem) => void
+  onDeleteBudgetItem: (itemId: string) => void
 }
 
 function TripDetails({
   trips,
   activities,
+  budgetItems,
   onDeleteTrip,
   onDeleteActivity,
   onMoveActivity,
-  onReorderActivity
+  onReorderActivity,
+  onAddBudgetItem,
+  onDeleteBudgetItem,
 }: TripDetailsProps) {
   const { tripId } = useParams()
   const navigate = useNavigate()
@@ -135,6 +143,13 @@ function TripDetails({
           </dd>
         </div>
       </dl>
+
+      <BudgetSection
+        trip={trip}
+        items={budgetItems}
+        onAddItem={onAddBudgetItem}
+        onDeleteItem={onDeleteBudgetItem}
+      />
 
       <ItinerarySection
         trip={trip}
