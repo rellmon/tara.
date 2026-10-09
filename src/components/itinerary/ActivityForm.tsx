@@ -22,6 +22,7 @@ interface ActivityFormProps {
   days: string[]
   defaultDate: string
   onSubmit: (values: ActivityFormValues) => void
+  initialValues?: ActivityFormValues
   submitLabel?: string
 }
 
@@ -37,18 +38,27 @@ function ActivityForm({
   days,
   defaultDate,
   onSubmit,
+  initialValues,
   submitLabel = 'Add activity',
 }: ActivityFormProps) {
   const [date, setDate] = useState(defaultDate)
-  const [title, setTitle] = useState('')
-  const [locationName, setLocationName] = useState('')
-  const [startTime, setStartTime] = useState('')
-  const [endTime, setEndTime] = useState('')
-  const [description, setDescription] = useState('')
-  const [estimatedCost, setEstimatedCost] = useState('')
-  const [category, setCategory] = useState<ActivityCategory>('sightseeing')
-  const [notes, setNotes] = useState('')
-  const [url, setUrl] = useState('')
+  const [title, setTitle] = useState(initialValues?.title ?? '')
+  const [locationName, setLocationName] = useState(
+    initialValues?.locationName ?? '',
+  )
+  const [startTime, setStartTime] = useState(initialValues?.startTime ?? '')
+  const [endTime, setEndTime] = useState(initialValues?.endTime ?? '')
+  const [description, setDescription] = useState(
+    initialValues?.description ?? '',
+  )
+  const [estimatedCost, setEstimatedCost] = useState(
+    initialValues ? String(initialValues.estimatedCost) : '',
+  )
+  const [category, setCategory] = useState<ActivityCategory>(
+    initialValues?.category ?? 'sightseeing',
+  )
+  const [notes, setNotes] = useState(initialValues?.notes ?? '')
+  const [url, setUrl] = useState(initialValues?.url ?? '')
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()

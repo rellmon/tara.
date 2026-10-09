@@ -8,6 +8,7 @@ import CreateTrip from './pages/CreateTrip'
 import TripDetails from './pages/TripDetails'
 import EditTrip from './pages/EditTrip'
 import AddActivity from './pages/AddActivity'
+import EditActivity from './pages/EditActivity'
 import { loadActivities, saveActivities } from './services/activityStorage'
 import { loadTrips, saveTrips } from './services/tripStorage'
 import type { ItineraryActivity } from './types/itinerary'
@@ -51,6 +52,14 @@ function App() {
     setActivities((previousActivities) => [...previousActivities, activity])
   }
 
+  function updateActivity(updatedActivity: ItineraryActivity) {
+    setActivities((previousActivities) =>
+      previousActivities.map((activity) =>
+        activity.id === updatedActivity.id ? updatedActivity : activity,
+      ),
+    )
+  }
+
   return (
     <Routes>
       <Route element={<Layout />}>
@@ -75,6 +84,16 @@ function App() {
         <Route
           path="/trips/:tripId/activities/new"
           element={<AddActivity trips={trips} onAddActivity={addActivity} />}
+        />
+        <Route
+          path="/trips/:tripId/activities/:activityId/edit"
+          element={
+            <EditActivity
+              trips={trips}
+              activities={activities}
+              onUpdateActivity={updateActivity}
+            />
+          }
         />
       </Route>
     </Routes>
