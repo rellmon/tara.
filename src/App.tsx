@@ -7,19 +7,24 @@ import Trips from './pages/Trips'
 import CreateTrip from './pages/CreateTrip'
 import TripDetails from './pages/TripDetails'
 import EditTrip from './pages/EditTrip'
-import { sampleActivities } from './data/sampleActivities'
+import AddActivity from './pages/AddActivity'
+import { loadActivities, saveActivities } from './services/activityStorage'
 import { loadTrips, saveTrips } from './services/tripStorage'
 import type { ItineraryActivity } from './types/itinerary'
 import type { Trip } from './types/trip'
-import AddActivity from './pages/AddActivity'
 
 function App() {
   const [trips, setTrips] = useState<Trip[]>(loadTrips)
-  const [activities] = useState<ItineraryActivity[]>(sampleActivities)
+  const [activities, setActivities] =
+    useState<ItineraryActivity[]>(loadActivities)
 
   useEffect(() => {
     saveTrips(trips)
   }, [trips])
+
+  useEffect(() => {
+    saveActivities(activities)
+  }, [activities])
 
   function addTrip(trip: Trip) {
     setTrips((previousTrips) => [trip, ...previousTrips])
@@ -37,6 +42,13 @@ function App() {
     setTrips((previousTrips) =>
       previousTrips.filter((trip) => trip.id !== tripId),
     )
+    setActivities((previousActivities) =>
+      previousActivities.filter((activity) => activity.tripId !== tripId),
+    )
+  }
+
+  function addActivity(activity: ItineraryActivity) {
+    setActivities((previousActivities) => [...previousActivities, activity])
   }
 
   return (
@@ -60,11 +72,11 @@ function App() {
           path="/trips/:tripId/edit"
           element={<EditTrip trips={trips} onUpdateTrip={updateTrip} />}
         />
+        <Route
+          path="/trips/:tripId/activities/new"
+          element={<AddActivity trips={trips} onAddActivity={addActivity} />}
+        />
       </Route>
-      <Route
-        path="/trips/:tripId/activities/new"
-        element={<AddActivity trips={trips} />}
-      />
     </Routes>
   )
 }

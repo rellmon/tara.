@@ -1,16 +1,19 @@
-import { Link, useParams, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import ActivityForm from '../components/itinerary/ActivityForm'
 import type { ActivityFormValues } from '../components/itinerary/ActivityForm'
+import type { ItineraryActivity } from '../types/itinerary'
 import type { Trip } from '../types/trip'
 import { getTripDays } from '../utils/itinerary'
 
 interface AddActivityProps {
   trips: Trip[]
+  onAddActivity: (activity: ItineraryActivity) => void
 }
 
-function AddActivity({ trips }: AddActivityProps) {
+function AddActivity({ trips, onAddActivity }: AddActivityProps) {
   const { tripId } = useParams()
+  const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const trip = trips.find((t) => t.id === tripId)
 
@@ -30,12 +33,23 @@ function AddActivity({ trips }: AddActivityProps) {
     )
   }
 
+  const currentTripId = trip.id
   const days = getTripDays(trip.startDate, trip.endDate)
   const requestedDate = searchParams.get('date') ?? ''
-  const defaultDate = days.includes(requestedDate) ? requestedDate : (days[0] ?? '')
+  const defaultDate = days.includes(requestedDate)
+    ? requestedDate
+    : (days[0] ?? '')
 
   function handleSubmit(values: ActivityFormValues) {
-    console.log('Activity submitted:', values)
+    const newActivity: ItineraryActivity = {
+      id: crypto.randomUUID(),
+      tripId: currentTripId,
+      completed: false,
+      ...values,
+    }
+
+    onAddActivity(newActivity)
+    navigate(`/trips/${currentTripId}`)
   }
 
   return (
