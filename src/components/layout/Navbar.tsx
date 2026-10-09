@@ -12,7 +12,7 @@ function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
 
   const linkClasses = ({ isActive }: { isActive: boolean }) =>
-    `rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+    `rounded-full px-4 py-3 text-sm font-medium transition-colors md:py-2 ${
       isActive
         ? 'bg-brand-50 text-brand-700'
         : 'text-muted hover:text-charcoal'
@@ -37,7 +37,7 @@ function Navbar() {
         {/* Mobile menu button */}
         <button
           type="button"
-          className="rounded-full p-2 text-charcoal hover:bg-sage md:hidden"
+          className="rounded-full p-2.5 text-charcoal hover:bg-sage md:hidden"
           aria-label={isOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={isOpen}
           onClick={() => setIsOpen(!isOpen)}

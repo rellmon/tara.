@@ -17,31 +17,35 @@ function TripCard({ trip }: TripCardProps) {
       </div>
 
       <div className="p-5">
-        <h2 className="font-display text-xl font-bold text-brand-900">
-            <Link
-                to={`/trips/${trip.id}`}
-                className="hover:text-brand-600 focus-visible:outline-2 focus-visible:outline-brand-600 after:absolute after:inset-0"
-            >
-                {trip.title}
-            </Link>
+        <h2 className="break-words font-display text-xl font-bold text-brand-900">
+          <Link
+            to={`/trips/${trip.id}`}
+            className="hover:text-brand-600 focus-visible:outline-2 focus-visible:outline-brand-600 after:absolute after:inset-0"
+          >
+            {trip.title}
+          </Link>
         </h2>
 
         <ul className="mt-3 space-y-2 text-sm text-muted">
-          <li className="flex items-center gap-2">
-            <MapPin size={16} aria-hidden="true" />
-            {trip.destination}
+          <li className="flex items-start gap-2">
+            <MapPin size={16} className="mt-0.5 shrink-0" aria-hidden="true" />
+            <span className="break-words">{trip.destination}</span>
           </li>
-          <li className="flex items-center gap-2">
-            <CalendarDays size={16} aria-hidden="true" />
-            {formatDateRange(trip.startDate, trip.endDate)}
+          <li className="flex items-start gap-2">
+            <CalendarDays
+              size={16}
+              className="mt-0.5 shrink-0"
+              aria-hidden="true"
+            />
+            <span>{formatDateRange(trip.startDate, trip.endDate)}</span>
           </li>
-          <li className="flex items-center gap-2">
-            <Users size={16} aria-hidden="true" />
-            {trip.travelerCount} travelers
+          <li className="flex items-start gap-2">
+            <Users size={16} className="mt-0.5 shrink-0" aria-hidden="true" />
+            <span>{trip.travelerCount} travelers</span>
           </li>
-          <li className="flex items-center gap-2">
-            <Wallet size={16} aria-hidden="true" />
-            {formatCurrency(trip.estimatedBudgetPerPerson)} per person
+          <li className="flex items-start gap-2">
+            <Wallet size={16} className="mt-0.5 shrink-0" aria-hidden="true" />
+            <span>{formatCurrency(trip.estimatedBudgetPerPerson)} per person</span>
           </li>
         </ul>
       </div>
