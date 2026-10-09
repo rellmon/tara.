@@ -146,7 +146,7 @@ function TripDetails({
       </dl>
 
       <EstimatedBreakdown
-        tripId={trip.id}
+        trip={trip}
         activities={activities}
         budgetItems={budgetItems}
       />

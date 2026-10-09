@@ -23,3 +23,13 @@ export function formatDateRange(startDate: string, endDate: string): string {
   }
   return `${format(start, 'MMM d')}–${format(end, 'd, yyyy')}`
 }
+
+// Like formatCurrency, but always shows centavos (e.g. ₱13,233.34).
+export function formatCurrencyExact(amount: number): string {
+  return new Intl.NumberFormat('en-PH', {
+    style: 'currency',
+    currency: 'PHP',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount)
+}

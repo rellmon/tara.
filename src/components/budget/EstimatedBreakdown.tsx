@@ -1,25 +1,27 @@
 import { BUDGET_CATEGORIES, BUDGET_CATEGORY_LABELS } from '../../types/budget'
 import type { BudgetItem } from '../../types/budget'
 import type { ItineraryActivity } from '../../types/itinerary'
-import { getEstimatedBreakdown } from '../../utils/budget'
-import { formatCurrency } from '../../utils/format'
+import type { Trip } from '../../types/trip'
+import { getCostPerPerson, getEstimatedBreakdown } from '../../utils/budget'
+import { formatCurrency, formatCurrencyExact } from '../../utils/format'
 
 interface EstimatedBreakdownProps {
-  tripId: string
+  trip: Trip
   activities: ItineraryActivity[]
   budgetItems: BudgetItem[]
 }
 
 function EstimatedBreakdown({
-  tripId,
+  trip,
   activities,
   budgetItems,
 }: EstimatedBreakdownProps) {
   const { byCategory, total } = getEstimatedBreakdown(
-    tripId,
+    trip.id,
     activities,
     budgetItems,
   )
+  const perPerson = getCostPerPerson(total, trip.travelerCount)
 
   // Only categories with a cost, largest first.
   const rows = BUDGET_CATEGORIES.filter((category) => byCategory[category] > 0)
@@ -74,6 +76,24 @@ function EstimatedBreakdown({
               {formatCurrency(total)}
             </span>
           </div>
+
+          <dl className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-xl bg-brand-50 p-4">
+              <dt className="text-sm text-muted">
+                Estimated per person ({trip.travelerCount}{' '}
+                {trip.travelerCount === 1 ? 'traveler' : 'travelers'})
+              </dt>
+              <dd className="mt-1 break-words font-display text-xl font-bold text-brand-900">
+                {formatCurrencyExact(perPerson)}
+              </dd>
+            </div>
+            <div className="rounded-xl bg-sage p-4">
+              <dt className="text-sm text-muted">Your per-person budget</dt>
+              <dd className="mt-1 break-words font-display text-xl font-bold text-brand-900">
+                {formatCurrencyExact(trip.estimatedBudgetPerPerson)}
+              </dd>
+            </div>
+          </dl>
         </div>
       )}
     </section>

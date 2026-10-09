@@ -58,3 +58,11 @@ export function getEstimatedBreakdown(
 
   return { byCategory, total: totalCentavos / 100 }
 }
+
+// The share each traveler pays, rounded UP to the next centavo so the
+// shares always cover the total. Returns 0 for an invalid traveler count.
+export function getCostPerPerson(total: number, travelerCount: number): number {
+  if (!Number.isInteger(travelerCount) || travelerCount < 1) return 0
+
+  return Math.ceil(toCentavos(total) / travelerCount) / 100
+}
