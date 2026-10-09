@@ -4,9 +4,10 @@ import Layout from './components/layout/Layout'
 import Home from './pages/Home'
 import Trips from './pages/Trips'
 import CreateTrip from './pages/CreateTrip'
+import TripDetails from './pages/TripDetails'
+import EditTrip from './pages/EditTrip'
 import { sampleTrips } from './data/sampleTrips'
 import type { Trip } from './types/trip'
-import TripDetails from './pages/TripDetails'
 
 function App() {
   const [trips, setTrips] = useState<Trip[]>(sampleTrips)
@@ -15,13 +16,34 @@ function App() {
     setTrips((previousTrips) => [trip, ...previousTrips])
   }
 
+  function updateTrip(updatedTrip: Trip) {
+    setTrips((previousTrips) =>
+      previousTrips.map((trip) =>
+        trip.id === updatedTrip.id ? updatedTrip : trip,
+      ),
+    )
+  }
+
+  function deleteTrip(tripId: string) {
+    setTrips((previousTrips) =>
+      previousTrips.filter((trip) => trip.id !== tripId),
+    )
+  }
+
   return (
     <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
         <Route path="/trips" element={<Trips trips={trips} />} />
         <Route path="/trips/new" element={<CreateTrip onAddTrip={addTrip} />} />
-        <Route path="/trips/:tripId" element={<TripDetails trips={trips} />} />
+        <Route
+          path="/trips/:tripId"
+          element={<TripDetails trips={trips} onDeleteTrip={deleteTrip} />}
+        />
+        <Route
+          path="/trips/:tripId/edit"
+          element={<EditTrip trips={trips} onUpdateTrip={updateTrip} />}
+        />
       </Route>
     </Routes>
   )

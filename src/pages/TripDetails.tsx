@@ -1,14 +1,16 @@
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, CalendarDays, MapPin, Users, Wallet } from 'lucide-react'
 import type { Trip } from '../types/trip'
 import { formatCurrency, formatDateRange } from '../utils/format'
 
 interface TripDetailsProps {
   trips: Trip[]
+  onDeleteTrip: (tripId: string) => void
 }
 
-function TripDetails({ trips }: TripDetailsProps) {
+function TripDetails({ trips, onDeleteTrip }: TripDetailsProps) {
   const { tripId } = useParams()
+  const navigate = useNavigate()
   const trip = trips.find((t) => t.id === tripId)
 
   if (!trip) {
@@ -28,6 +30,16 @@ function TripDetails({ trips }: TripDetailsProps) {
         </Link>
       </div>
     )
+  }
+
+  function handleDelete() {
+    const confirmed = window.confirm(
+      `Delete "${trip!.title}"? This can't be undone.`,
+    )
+    if (!confirmed) return
+
+    onDeleteTrip(trip!.id)
+    navigate('/trips')
   }
 
   const totalBudget = trip.travelerCount * trip.estimatedBudgetPerPerson
@@ -54,6 +66,22 @@ function TripDetails({ trips }: TripDetailsProps) {
       {trip.description && (
         <p className="mt-2 max-w-2xl text-muted">{trip.description}</p>
       )}
+
+      <div className="mt-5 flex flex-wrap gap-3">
+        <Link
+          to={`/trips/${trip.id}/edit`}
+          className="rounded-full bg-sage px-5 py-2.5 text-sm font-medium text-brand-900 transition-colors hover:bg-sage-dark"
+        >
+          Edit trip
+        </Link>
+        <button
+          type="button"
+          onClick={handleDelete}
+          className="rounded-full px-5 py-2.5 text-sm font-medium text-red-700 transition-colors hover:bg-red-50 focus-visible:outline-2 focus-visible:outline-red-700"
+        >
+          Delete trip
+        </button>
+      </div>
 
       <dl className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-2xl border border-line bg-white p-5">

@@ -14,19 +14,29 @@ export interface TripFormValues {
 
 interface TripFormProps {
   onSubmit: (values: TripFormValues) => void
+  initialValues?: TripFormValues
+  submitLabel?: string
 }
 
 const inputClasses =
   'mt-1 w-full rounded-xl border border-line bg-white px-4 py-2.5 text-charcoal focus-visible:outline-2 focus-visible:outline-brand-600'
 
-function TripForm({ onSubmit }: TripFormProps) {
-  const [title, setTitle] = useState('')
-  const [destination, setDestination] = useState('')
-  const [startDate, setStartDate] = useState('')
-  const [endDate, setEndDate] = useState('')
-  const [description, setDescription] = useState('')
-  const [travelerCount, setTravelerCount] = useState('2')
-  const [budget, setBudget] = useState('')
+function TripForm({
+  onSubmit,
+  initialValues,
+  submitLabel = 'Create trip',
+}: TripFormProps) {
+  const [title, setTitle] = useState(initialValues?.title ?? '')
+  const [destination, setDestination] = useState(initialValues?.destination ?? '')
+  const [startDate, setStartDate] = useState(initialValues?.startDate ?? '')
+  const [endDate, setEndDate] = useState(initialValues?.endDate ?? '')
+  const [description, setDescription] = useState(initialValues?.description ?? '')
+  const [travelerCount, setTravelerCount] = useState(
+    String(initialValues?.travelerCount ?? 2),
+  )
+  const [budget, setBudget] = useState(
+    initialValues ? String(initialValues.estimatedBudgetPerPerson) : '',
+  )
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -144,7 +154,7 @@ function TripForm({ onSubmit }: TripFormProps) {
       </div>
 
       <Button type="submit" size="lg">
-        Create trip
+        {submitLabel}
       </Button>
     </form>
   )
