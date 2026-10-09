@@ -129,3 +129,41 @@ export function moveActivity(
   result[b] = temp
   return result
 }
+
+// Move the dragged activity to the position of the activity it was dropped on.
+// Both must belong to the same trip and day.
+export function reorderActivity(
+  activities: ItineraryActivity[],
+  activeId: string,
+  overId: string,
+): ItineraryActivity[] {
+  const active = activities.find((activity) => activity.id === activeId)
+  const over = activities.find((activity) => activity.id === overId)
+
+  if (!active || !over || active.id === over.id) return activities
+  if (active.tripId !== over.tripId || active.date !== over.date) {
+    return activities
+  }
+
+  // Positions in the full list that belong to this trip and day.
+  const slots: number[] = []
+  activities.forEach((activity, index) => {
+    if (activity.tripId === active.tripId && activity.date === active.date) {
+      slots.push(index)
+    }
+  })
+
+  const dayItems = slots.map((index) => activities[index])
+  const from = dayItems.findIndex((activity) => activity.id === activeId)
+  const to = dayItems.findIndex((activity) => activity.id === overId)
+
+  const [moved] = dayItems.splice(from, 1)
+  dayItems.splice(to, 0, moved)
+
+  // Write the reordered day back into the same slots.
+  const result = [...activities]
+  slots.forEach((slotIndex, i) => {
+    result[slotIndex] = dayItems[i]
+  })
+  return result
+}

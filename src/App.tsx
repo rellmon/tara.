@@ -11,7 +11,11 @@ import AddActivity from './pages/AddActivity'
 import EditActivity from './pages/EditActivity'
 import { loadActivities, saveActivities } from './services/activityStorage'
 import { loadTrips, saveTrips } from './services/tripStorage'
-import { insertActivityByTime, moveActivity } from './utils/itinerary'
+import {
+  insertActivityByTime,
+  moveActivity,
+  reorderActivity,
+} from './utils/itinerary'
 import type { ItineraryActivity } from './types/itinerary'
 import type { Trip } from './types/trip'
 
@@ -95,6 +99,12 @@ function App() {
     )
   }
 
+  function handleReorderActivity(activeId: string, overId: string) {
+    setActivities((previousActivities) =>
+      reorderActivity(previousActivities, activeId, overId),
+    )
+  }
+
   return (
     <Routes>
       <Route element={<Layout />}>
@@ -111,6 +121,7 @@ function App() {
               onDeleteTrip={deleteTrip}
               onDeleteActivity={deleteActivity}
               onMoveActivity={handleMoveActivity}
+              onReorderActivity={handleReorderActivity}
             />
           }
         />
