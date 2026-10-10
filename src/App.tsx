@@ -9,6 +9,7 @@ import TripDetails from './pages/TripDetails'
 import EditTrip from './pages/EditTrip'
 import AddActivity from './pages/AddActivity'
 import EditActivity from './pages/EditActivity'
+import Polls from './pages/Polls'
 import { loadActivities, saveActivities } from './services/activityStorage'
 import { loadBudgetItems, saveBudgetItems } from './services/budgetStorage'
 import { loadExpenses, saveExpenses } from './services/expenseStorage'
@@ -17,6 +18,7 @@ import {
   loadParticipants,
   saveParticipants,
 } from './services/participantStorage'
+import { loadPolls, loadVotes, savePolls, saveVotes } from './services/pollStorage'
 import { loadTrips, saveTrips } from './services/tripStorage'
 import {
   insertActivityByTime,
@@ -28,6 +30,7 @@ import type { Expense } from './types/expense'
 import type { ItineraryActivity } from './types/itinerary'
 import type { PackingItem } from './types/packing'
 import type { Participant } from './types/participant'
+import type { Poll, Vote } from './types/poll'
 import type { Trip } from './types/trip'
 
 function App() {
@@ -40,6 +43,8 @@ function App() {
   const [expenses, setExpenses] = useState<Expense[]>(loadExpenses)
   const [packingItems, setPackingItems] =
     useState<PackingItem[]>(loadPackingItems)
+  const [polls, setPolls] = useState<Poll[]>(loadPolls)
+  const [votes, setVotes] = useState<Vote[]>(loadVotes)
 
   useEffect(() => {
     saveTrips(trips)
@@ -65,6 +70,14 @@ function App() {
     savePackingItems(packingItems)
   }, [packingItems])
 
+  useEffect(() => {
+    savePolls(polls)
+  }, [polls])
+
+  useEffect(() => {
+    saveVotes(votes)
+  }, [votes])
+
   function addTrip(trip: Trip) {
     setTrips((previousTrips) => [trip, ...previousTrips])
   }
@@ -78,6 +91,11 @@ function App() {
   }
 
   function deleteTrip(tripId: string) {
+    // Polls attached to this trip go too, along with their votes.
+    const removedPollIds = polls
+      .filter((poll) => poll.tripId === tripId)
+      .map((poll) => poll.id)
+
     setTrips((previousTrips) =>
       previousTrips.filter((trip) => trip.id !== tripId),
     )
@@ -95,6 +113,12 @@ function App() {
     )
     setPackingItems((previousItems) =>
       previousItems.filter((item) => item.tripId !== tripId),
+    )
+    setPolls((previousPolls) =>
+      previousPolls.filter((poll) => poll.tripId !== tripId),
+    )
+    setVotes((previousVotes) =>
+      previousVotes.filter((vote) => !removedPollIds.includes(vote.pollId)),
     )
   }
 
@@ -206,18 +230,31 @@ function App() {
   }
 
   function updatePackingItem(updatedItem: PackingItem) {
-  setPackingItems((previousItems) =>
-    previousItems.map((item) =>
-      item.id === updatedItem.id ? updatedItem : item,
-    ),
-  )
-}
+    setPackingItems((previousItems) =>
+      previousItems.map((item) =>
+        item.id === updatedItem.id ? updatedItem : item,
+      ),
+    )
+  }
 
-function deletePackingItem(itemId: string) {
-  setPackingItems((previousItems) =>
-    previousItems.filter((item) => item.id !== itemId),
-  )
-}
+  function deletePackingItem(itemId: string) {
+    setPackingItems((previousItems) =>
+      previousItems.filter((item) => item.id !== itemId),
+    )
+  }
+
+  function addPoll(poll: Poll) {
+    setPolls((previousPolls) => [poll, ...previousPolls])
+  }
+
+  function deletePoll(pollId: string) {
+    setPolls((previousPolls) =>
+      previousPolls.filter((poll) => poll.id !== pollId),
+    )
+    setVotes((previousVotes) =>
+      previousVotes.filter((vote) => vote.pollId !== pollId),
+    )
+  }
 
   return (
     <Routes>
@@ -269,6 +306,18 @@ function deletePackingItem(itemId: string) {
               trips={trips}
               activities={activities}
               onUpdateActivity={updateActivity}
+            />
+          }
+        />
+        <Route
+          path="/polls"
+          element={
+            <Polls
+              polls={polls}
+              votes={votes}
+              trips={trips}
+              onAddPoll={addPoll}
+              onDeletePoll={deletePoll}
             />
           }
         />

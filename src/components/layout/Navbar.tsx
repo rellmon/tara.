@@ -6,7 +6,9 @@ const navLinks = [
   { to: '/', label: 'Home' },
   { to: '/dashboard', label: 'Dashboard' },
   { to: '/trips', label: 'My Trips' },
+  { to: '/polls', label: 'Polls' },
 ]
+
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
