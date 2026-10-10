@@ -11,6 +11,10 @@ import AddActivity from './pages/AddActivity'
 import EditActivity from './pages/EditActivity'
 import { loadActivities, saveActivities } from './services/activityStorage'
 import { loadBudgetItems, saveBudgetItems } from './services/budgetStorage'
+import {
+  loadParticipants,
+  saveParticipants,
+} from './services/participantStorage'
 import { loadTrips, saveTrips } from './services/tripStorage'
 import {
   insertActivityByTime,
@@ -19,6 +23,7 @@ import {
 } from './utils/itinerary'
 import type { BudgetItem } from './types/budget'
 import type { ItineraryActivity } from './types/itinerary'
+import type { Participant } from './types/participant'
 import type { Trip } from './types/trip'
 
 function App() {
@@ -26,6 +31,8 @@ function App() {
   const [activities, setActivities] =
     useState<ItineraryActivity[]>(loadActivities)
   const [budgetItems, setBudgetItems] = useState<BudgetItem[]>(loadBudgetItems)
+  const [participants, setParticipants] =
+    useState<Participant[]>(loadParticipants)
 
   useEffect(() => {
     saveTrips(trips)
@@ -38,6 +45,10 @@ function App() {
   useEffect(() => {
     saveBudgetItems(budgetItems)
   }, [budgetItems])
+
+  useEffect(() => {
+    saveParticipants(participants)
+  }, [participants])
 
   function addTrip(trip: Trip) {
     setTrips((previousTrips) => [trip, ...previousTrips])
@@ -60,6 +71,9 @@ function App() {
     )
     setBudgetItems((previousItems) =>
       previousItems.filter((item) => item.tripId !== tripId),
+    )
+    setParticipants((previousParticipants) =>
+      previousParticipants.filter((participant) => participant.tripId !== tripId),
     )
   }
 
@@ -125,6 +139,21 @@ function App() {
     )
   }
 
+  function addParticipant(participant: Participant) {
+    setParticipants((previousParticipants) => [
+      ...previousParticipants,
+      participant,
+    ])
+  }
+
+  function deleteParticipant(participantId: string) {
+    setParticipants((previousParticipants) =>
+      previousParticipants.filter(
+        (participant) => participant.id !== participantId,
+      ),
+    )
+  }
+
   return (
     <Routes>
       <Route element={<Layout />}>
@@ -139,12 +168,15 @@ function App() {
               trips={trips}
               activities={activities}
               budgetItems={budgetItems}
+              participants={participants}
               onDeleteTrip={deleteTrip}
               onDeleteActivity={deleteActivity}
               onMoveActivity={handleMoveActivity}
               onReorderActivity={handleReorderActivity}
               onAddBudgetItem={addBudgetItem}
               onDeleteBudgetItem={deleteBudgetItem}
+              onAddParticipant={addParticipant}
+              onDeleteParticipant={deleteParticipant}
             />
           }
         />

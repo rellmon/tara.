@@ -1,36 +1,44 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, CalendarDays, MapPin, Users, Wallet } from 'lucide-react'
 import BudgetSection from '../components/budget/BudgetSection'
+import DailyBudget from '../components/budget/DailyBudget'
+import EstimatedBreakdown from '../components/budget/EstimatedBreakdown'
 import ItinerarySection from '../components/itinerary/ItinerarySection'
+import ParticipantsSection from '../components/participants/ParticipantsSection'
 import type { BudgetItem } from '../types/budget'
 import type { ItineraryActivity } from '../types/itinerary'
+import type { Participant } from '../types/participant'
 import type { Trip } from '../types/trip'
 import { formatCurrency, formatDateRange } from '../utils/format'
-import EstimatedBreakdown from '../components/budget/EstimatedBreakdown'
-import DailyBudget from '../components/budget/DailyBudget'
 
 interface TripDetailsProps {
   trips: Trip[]
   activities: ItineraryActivity[]
   budgetItems: BudgetItem[]
+  participants: Participant[]
   onDeleteTrip: (tripId: string) => void
   onDeleteActivity: (activityId: string) => void
   onMoveActivity: (activityId: string, direction: -1 | 1) => void
   onReorderActivity: (activeId: string, overId: string) => void
   onAddBudgetItem: (item: BudgetItem) => void
   onDeleteBudgetItem: (itemId: string) => void
+  onAddParticipant: (participant: Participant) => void
+  onDeleteParticipant: (participantId: string) => void
 }
 
 function TripDetails({
   trips,
   activities,
   budgetItems,
+  participants,
   onDeleteTrip,
   onDeleteActivity,
   onMoveActivity,
   onReorderActivity,
   onAddBudgetItem,
   onDeleteBudgetItem,
+  onAddParticipant,
+  onDeleteParticipant,
 }: TripDetailsProps) {
   const { tripId } = useParams()
   const navigate = useNavigate()
@@ -145,6 +153,13 @@ function TripDetails({
           </dd>
         </div>
       </dl>
+
+      <ParticipantsSection
+        trip={trip}
+        participants={participants}
+        onAddParticipant={onAddParticipant}
+        onDeleteParticipant={onDeleteParticipant}
+      />
 
       <EstimatedBreakdown
         trip={trip}
