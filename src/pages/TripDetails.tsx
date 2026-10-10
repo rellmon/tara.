@@ -28,6 +28,8 @@ interface TripDetailsProps {
   onAddParticipant: (participant: Participant) => void
   onDeleteParticipant: (participantId: string) => void
   onAddExpense: (expense: Expense) => void
+  onUpdateExpense: (expense: Expense) => void
+  onDeleteExpense: (expenseId: string) => void
 }
 
 function TripDetails({
@@ -45,6 +47,8 @@ function TripDetails({
   onAddParticipant,
   onDeleteParticipant,
   onAddExpense,
+  onUpdateExpense,
+  onDeleteExpense,
 }: TripDetailsProps) {
   const { tripId } = useParams()
   const navigate = useNavigate()
@@ -192,6 +196,8 @@ function TripDetails({
         expenses={expenses}
         participants={participants}
         onAddExpense={onAddExpense}
+        onUpdateExpense={onUpdateExpense}
+        onDeleteExpense={onDeleteExpense}
       />
 
       <ItinerarySection

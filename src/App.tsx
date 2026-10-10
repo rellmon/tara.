@@ -168,6 +168,20 @@ function App() {
     setExpenses((previousExpenses) => [...previousExpenses, expense])
   }
 
+  function updateExpense(updatedExpense: Expense) {
+    setExpenses((previousExpenses) =>
+      previousExpenses.map((expense) =>
+        expense.id === updatedExpense.id ? updatedExpense : expense,
+      ),
+    )
+  }
+
+  function deleteExpense(expenseId: string) {
+    setExpenses((previousExpenses) =>
+      previousExpenses.filter((expense) => expense.id !== expenseId),
+    )
+  }
+
   return (
     <Routes>
       <Route element={<Layout />}>
@@ -193,6 +207,8 @@ function App() {
               onAddParticipant={addParticipant}
               onDeleteParticipant={deleteParticipant}
               onAddExpense={addExpense}
+              onUpdateExpense={updateExpense}
+              onDeleteExpense={deleteExpense}
             />
           }
         />
