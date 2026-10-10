@@ -3,6 +3,7 @@ import type { Participant } from '../../types/participant'
 import type { Trip } from '../../types/trip'
 import { getBalances } from '../../utils/balances'
 import { formatCurrencyExact } from '../../utils/format'
+import { getSettlements } from '../../utils/settlements'
 
 interface BalancesSectionProps {
   trip: Trip
@@ -19,6 +20,7 @@ function BalancesSection({ trip, expenses, participants }: BalancesSectionProps)
   if (tripExpenses.length === 0 || tripParticipants.length === 0) return null
 
   const balances = getBalances(tripExpenses, tripParticipants)
+  const settlements = getSettlements(balances)
 
   return (
     <section aria-labelledby="balances-heading" className="mt-12">
@@ -29,8 +31,7 @@ function BalancesSection({ trip, expenses, participants }: BalancesSectionProps)
         Balances
       </h2>
       <p className="mt-1 text-sm text-muted">
-        Paid minus each person's share of every expense. Who pays whom comes
-        next.
+        Paid minus each person's share of every expense.
       </p>
 
       <ul className="mt-4 space-y-3">
@@ -79,6 +80,38 @@ function BalancesSection({ trip, expenses, participants }: BalancesSectionProps)
           )
         })}
       </ul>
+
+      <h3 className="mt-8 font-display text-xl font-bold text-brand-900">
+        Settle up
+      </h3>
+
+      {settlements.length === 0 ? (
+        <p className="mt-3 rounded-2xl border border-dashed border-line p-5 text-sm text-muted">
+          Everyone is settled up.
+        </p>
+      ) : (
+        <ul className="mt-3 space-y-3">
+          {settlements.map((settlement) => (
+            <li
+              key={`${settlement.fromId}-${settlement.toId}`}
+              className="flex flex-wrap items-baseline justify-between gap-2 rounded-2xl border border-line bg-white p-4"
+            >
+              <p className="break-words text-charcoal">
+                <span className="font-medium">{settlement.fromName}</span> pays{' '}
+                <span className="font-medium">{settlement.toName}</span>
+              </p>
+              <p className="font-semibold text-brand-900">
+                {formatCurrencyExact(settlement.amount)}
+              </p>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <p className="mt-3 text-xs text-muted">
+        Suggested payments based on the recorded expenses. Tara doesn't move
+        money or track repayments yet.
+      </p>
     </section>
   )
 }
