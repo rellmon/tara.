@@ -1,6 +1,6 @@
 import type { Expense } from '../types/expense'
 import type { Participant } from '../types/participant'
-import { splitExpenseEqually } from './splitExpense'
+import { getExpenseShares } from './splitExpense'
 
 export interface Balance {
   participantId: string
@@ -25,7 +25,7 @@ export function getBalances(
   }
 
   for (const expense of expenses) {
-    const shares = splitExpenseEqually(expense)
+    const shares = getExpenseShares(expense)
     if (shares.length === 0) continue
 
     let expenseCentavos = 0

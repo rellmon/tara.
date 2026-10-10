@@ -8,6 +8,8 @@ export interface Expense {
   category: BudgetCategory
   date: string // "YYYY-MM-DD"
   paidById: string // a Participant id
-  sharedByIds: string[] // Participant ids who share the cost (equal split)
+  sharedByIds: string[] // Participant ids who share the cost
+  // Exact amount per person. When missing, the cost is split equally.
+  customShares?: Record<string, number>
   notes: string // "" if none
 }

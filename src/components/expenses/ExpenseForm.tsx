@@ -5,6 +5,7 @@ import Button from '../ui/Button'
 import { BUDGET_CATEGORIES, BUDGET_CATEGORY_LABELS } from '../../types/budget'
 import type { BudgetCategory } from '../../types/budget'
 import type { Participant } from '../../types/participant'
+import { formatCurrencyExact } from '../../utils/format'
 import { validateExpense } from '../../utils/validateExpense'
 import type { ExpenseErrors } from '../../utils/validateExpense'
 
@@ -15,8 +16,11 @@ export interface ExpenseFormValues {
   date: string
   paidById: string
   sharedByIds: string[]
+  customShares?: Record<string, number>
   notes: string
 }
+
+type SplitMode = 'equal' | 'custom'
 
 interface ExpenseFormProps {
   participants: Participant[] // the trip's participants only
@@ -29,6 +33,9 @@ interface ExpenseFormProps {
 
 const inputClasses =
   'mt-1 w-full rounded-xl border border-line bg-white px-4 py-2.5 text-charcoal focus-visible:outline-2 focus-visible:outline-brand-600'
+
+const chipClasses =
+  'flex min-h-10 cursor-pointer items-center gap-2 rounded-full border border-line px-4 py-1.5 text-sm has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50'
 
 function FieldError({ id, message }: { id: string; message?: string }) {
   if (!message) return null
@@ -60,12 +67,26 @@ function ExpenseForm({
     initialValues?.date ?? format(new Date(), 'yyyy-MM-dd'),
   )
   const [paidById, setPaidById] = useState(initialValues?.paidById ?? '')
-  // People NOT sharing this expense. Anyone not listed here shares it,
+  // People NOT sharing an equal split. Anyone not listed here shares it,
   // so travelers added later are included by default.
   const [excludedIds, setExcludedIds] = useState<string[]>(
     initialValues
       ? participantIds.filter((id) => !initialValues.sharedByIds.includes(id))
       : [],
+  )
+  const [splitMode, setSplitMode] = useState<SplitMode>(
+    initialValues?.customShares ? 'custom' : 'equal',
+  )
+  // Amounts typed for a custom split, keyed by participant id.
+  const [customAmounts, setCustomAmounts] = useState<Record<string, string>>(
+    initialValues?.customShares
+      ? Object.fromEntries(
+          Object.entries(initialValues.customShares).map(([id, value]) => [
+            id,
+            String(value),
+          ]),
+        )
+      : {},
   )
   const [notes, setNotes] = useState(initialValues?.notes ?? '')
   const [errors, setErrors] = useState<ExpenseErrors>({})
@@ -74,7 +95,30 @@ function ExpenseForm({
   const payerId = participantIds.includes(paidById)
     ? paidById
     : (participantIds[0] ?? '')
-  const sharedByIds = participantIds.filter((id) => !excludedIds.includes(id))
+  const equalSharedByIds = participantIds.filter(
+    (id) => !excludedIds.includes(id),
+  )
+
+  // People with a non-blank amount share a custom split.
+  const customShares: Record<string, number> = {}
+  for (const id of participantIds) {
+    const raw = customAmounts[id]
+    if (raw !== undefined && raw.trim() !== '') {
+      customShares[id] = Number(raw)
+    }
+  }
+
+  const amountNumber = Number(amount)
+  const totalCentavos =
+    amount.trim() !== '' && Number.isFinite(amountNumber) && amountNumber > 0
+      ? Math.round(amountNumber * 100)
+      : null
+  const assignedCentavos = Object.values(customShares).reduce(
+    (sum, value) => (Number.isFinite(value) ? sum + Math.round(value * 100) : sum),
+    0,
+  )
+  const leftCentavos =
+    totalCentavos === null ? null : totalCentavos - assignedCentavos
 
   function toggleShared(id: string) {
     setExcludedIds((previous) =>
@@ -87,12 +131,14 @@ function ExpenseForm({
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
+    const isCustom = splitMode === 'custom'
     const values = {
       name: name.trim(),
       amount: amount === '' ? NaN : Number(amount),
       date,
       paidById: payerId,
-      sharedByIds,
+      sharedByIds: isCustom ? Object.keys(customShares) : equalSharedByIds,
+      customShares: isCustom ? customShares : undefined,
     }
 
     const validationErrors = validateExpense(values, participantIds)
@@ -101,14 +147,18 @@ function ExpenseForm({
 
     onSubmit({ ...values, category, notes: notes.trim() })
 
-    // The add form keeps date, category, and payer for quick repeated entry.
+    // The add form keeps date, category, payer, and split mode for quick
+    // repeated entry.
     if (!initialValues) {
       setName('')
       setAmount('')
       setNotes('')
       setExcludedIds([])
+      setCustomAmounts({})
     }
   }
+
+  const splitError = errors.customShares ?? errors.sharedByIds
 
   return (
     <form
@@ -221,33 +271,106 @@ function ExpenseForm({
         </div>
       </div>
 
-      <fieldset
-        aria-describedby={
-          errors.sharedByIds ? `${idPrefix}-shared-error` : undefined
-        }
-      >
-        <legend className="text-sm font-medium">Shared by</legend>
+      <fieldset>
+        <legend className="text-sm font-medium">How is it split?</legend>
         <div className="mt-2 flex flex-wrap gap-2">
-          {participants.map((participant) => (
-            <label
-              key={participant.id}
-              className="flex min-h-10 cursor-pointer items-center gap-2 rounded-full border border-line px-4 py-1.5 text-sm has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50"
-            >
-              <input
-                type="checkbox"
-                checked={sharedByIds.includes(participant.id)}
-                onChange={() => toggleShared(participant.id)}
-                className="h-4 w-4 accent-brand-600"
-              />
-              {participant.name}
-            </label>
-          ))}
+          <label className={chipClasses}>
+            <input
+              type="radio"
+              name={`${idPrefix}-split`}
+              checked={splitMode === 'equal'}
+              onChange={() => setSplitMode('equal')}
+              className="h-4 w-4 accent-brand-600"
+            />
+            Equally
+          </label>
+          <label className={chipClasses}>
+            <input
+              type="radio"
+              name={`${idPrefix}-split`}
+              checked={splitMode === 'custom'}
+              onChange={() => setSplitMode('custom')}
+              className="h-4 w-4 accent-brand-600"
+            />
+            Custom amounts
+          </label>
         </div>
-        <FieldError
-          id={`${idPrefix}-shared-error`}
-          message={errors.sharedByIds}
-        />
       </fieldset>
+
+      {splitMode === 'equal' ? (
+        <fieldset
+          aria-describedby={splitError ? `${idPrefix}-split-error` : undefined}
+        >
+          <legend className="text-sm font-medium">Shared by</legend>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {participants.map((participant) => (
+              <label key={participant.id} className={chipClasses}>
+                <input
+                  type="checkbox"
+                  checked={equalSharedByIds.includes(participant.id)}
+                  onChange={() => toggleShared(participant.id)}
+                  className="h-4 w-4 accent-brand-600"
+                />
+                {participant.name}
+              </label>
+            ))}
+          </div>
+          <FieldError id={`${idPrefix}-split-error`} message={splitError} />
+        </fieldset>
+      ) : (
+        <fieldset
+          aria-describedby={splitError ? `${idPrefix}-split-error` : undefined}
+        >
+          <legend className="text-sm font-medium">
+            Each person's share (₱)
+          </legend>
+          <p className="mt-1 text-xs text-muted">
+            Leave blank for anyone who isn't sharing.
+          </p>
+          <div className="mt-2 grid gap-3 sm:grid-cols-2">
+            {participants.map((participant) => (
+              <div key={participant.id}>
+                <label
+                  htmlFor={`${idPrefix}-custom-${participant.id}`}
+                  className="text-sm text-muted"
+                >
+                  {participant.name}
+                </label>
+                <input
+                  id={`${idPrefix}-custom-${participant.id}`}
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={customAmounts[participant.id] ?? ''}
+                  onChange={(e) =>
+                    setCustomAmounts((previous) => ({
+                      ...previous,
+                      [participant.id]: e.target.value,
+                    }))
+                  }
+                  placeholder="0.00"
+                  className={inputClasses}
+                />
+              </div>
+            ))}
+          </div>
+          <p
+            aria-live="polite"
+            className={`mt-3 text-sm ${
+              leftCentavos === 0 ? 'text-brand-700' : 'text-muted'
+            }`}
+          >
+            {leftCentavos === null
+              ? 'Enter the amount above to check the total.'
+              : leftCentavos === 0
+                ? `All ${formatCurrencyExact(totalCentavos! / 100)} is assigned.`
+                : leftCentavos > 0
+                  ? `${formatCurrencyExact(assignedCentavos / 100)} of ${formatCurrencyExact(totalCentavos! / 100)} assigned. ${formatCurrencyExact(leftCentavos / 100)} left.`
+                  : `Over by ${formatCurrencyExact(Math.abs(leftCentavos) / 100)}.`}
+          </p>
+          <FieldError id={`${idPrefix}-split-error`} message={splitError} />
+        </fieldset>
+      )}
 
       <div>
         <label htmlFor={`${idPrefix}-notes`} className="text-sm font-medium">

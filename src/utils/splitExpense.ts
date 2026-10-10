@@ -26,3 +26,32 @@ export function splitExpenseEqually(expense: Expense): ExpenseShare[] {
     amount: (baseCentavos + (index < leftover ? 1 : 0)) / 100,
   }))
 }
+
+// The shares for any expense: custom amounts when present, equal otherwise.
+// Returns no shares if custom amounts are invalid or don't add up to the
+// expense amount, so bad data can never create or lose money.
+export function getExpenseShares(expense: Expense): ExpenseShare[] {
+  if (expense.customShares === undefined) {
+    return splitExpenseEqually(expense)
+  }
+
+  const totalCentavos = Math.round(expense.amount * 100)
+  if (!Number.isFinite(totalCentavos) || totalCentavos <= 0) return []
+
+  const shares: ExpenseShare[] = []
+  let assignedCentavos = 0
+
+  for (const participantId of new Set(expense.sharedByIds)) {
+    const centavos = Math.round(expense.customShares[participantId] * 100)
+    if (!Number.isFinite(centavos) || centavos <= 0) return []
+
+    assignedCentavos += centavos
+    shares.push({
+      expenseId: expense.id,
+      participantId,
+      amount: centavos / 100,
+    })
+  }
+
+  return assignedCentavos === totalCentavos ? shares : []
+}
