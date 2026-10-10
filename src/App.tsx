@@ -12,6 +12,7 @@ import EditActivity from './pages/EditActivity'
 import { loadActivities, saveActivities } from './services/activityStorage'
 import { loadBudgetItems, saveBudgetItems } from './services/budgetStorage'
 import { loadExpenses, saveExpenses } from './services/expenseStorage'
+import { loadPackingItems, savePackingItems } from './services/packingStorage'
 import {
   loadParticipants,
   saveParticipants,
@@ -25,6 +26,7 @@ import {
 import type { BudgetItem } from './types/budget'
 import type { Expense } from './types/expense'
 import type { ItineraryActivity } from './types/itinerary'
+import type { PackingItem } from './types/packing'
 import type { Participant } from './types/participant'
 import type { Trip } from './types/trip'
 
@@ -36,6 +38,8 @@ function App() {
   const [participants, setParticipants] =
     useState<Participant[]>(loadParticipants)
   const [expenses, setExpenses] = useState<Expense[]>(loadExpenses)
+  const [packingItems, setPackingItems] =
+    useState<PackingItem[]>(loadPackingItems)
 
   useEffect(() => {
     saveTrips(trips)
@@ -56,6 +60,10 @@ function App() {
   useEffect(() => {
     saveExpenses(expenses)
   }, [expenses])
+
+  useEffect(() => {
+    savePackingItems(packingItems)
+  }, [packingItems])
 
   function addTrip(trip: Trip) {
     setTrips((previousTrips) => [trip, ...previousTrips])
@@ -84,6 +92,9 @@ function App() {
     )
     setExpenses((previousExpenses) =>
       previousExpenses.filter((expense) => expense.tripId !== tripId),
+    )
+    setPackingItems((previousItems) =>
+      previousItems.filter((item) => item.tripId !== tripId),
     )
   }
 
@@ -182,6 +193,18 @@ function App() {
     )
   }
 
+  function addPackingItem(item: PackingItem) {
+    setPackingItems((previousItems) => [...previousItems, item])
+  }
+
+  function togglePackingItem(itemId: string) {
+    setPackingItems((previousItems) =>
+      previousItems.map((item) =>
+        item.id === itemId ? { ...item, packed: !item.packed } : item,
+      ),
+    )
+  }
+
   return (
     <Routes>
       <Route element={<Layout />}>
@@ -198,6 +221,7 @@ function App() {
               budgetItems={budgetItems}
               participants={participants}
               expenses={expenses}
+              packingItems={packingItems}
               onDeleteTrip={deleteTrip}
               onDeleteActivity={deleteActivity}
               onMoveActivity={handleMoveActivity}
@@ -209,6 +233,8 @@ function App() {
               onAddExpense={addExpense}
               onUpdateExpense={updateExpense}
               onDeleteExpense={deleteExpense}
+              onAddPackingItem={addPackingItem}
+              onTogglePackingItem={togglePackingItem}
             />
           }
         />

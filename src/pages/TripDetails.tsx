@@ -1,19 +1,21 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, CalendarDays, MapPin, Users, Wallet } from 'lucide-react'
 import BudgetSection from '../components/budget/BudgetSection'
+import BudgetVsActual from '../components/budget/BudgetVsActual'
 import DailyBudget from '../components/budget/DailyBudget'
 import EstimatedBreakdown from '../components/budget/EstimatedBreakdown'
+import BalancesSection from '../components/expenses/BalancesSection'
 import ExpensesSection from '../components/expenses/ExpensesSection'
 import ItinerarySection from '../components/itinerary/ItinerarySection'
+import PackingSection from '../components/packing/PackingSection'
 import ParticipantsSection from '../components/participants/ParticipantsSection'
 import type { BudgetItem } from '../types/budget'
 import type { Expense } from '../types/expense'
 import type { ItineraryActivity } from '../types/itinerary'
+import type { PackingItem } from '../types/packing'
 import type { Participant } from '../types/participant'
 import type { Trip } from '../types/trip'
 import { formatCurrency, formatDateRange } from '../utils/format'
-import BudgetVsActual from '../components/budget/BudgetVsActual'
-import BalancesSection from '../components/expenses/BalancesSection'
 
 interface TripDetailsProps {
   trips: Trip[]
@@ -21,6 +23,7 @@ interface TripDetailsProps {
   budgetItems: BudgetItem[]
   participants: Participant[]
   expenses: Expense[]
+  packingItems: PackingItem[]
   onDeleteTrip: (tripId: string) => void
   onDeleteActivity: (activityId: string) => void
   onMoveActivity: (activityId: string, direction: -1 | 1) => void
@@ -32,6 +35,8 @@ interface TripDetailsProps {
   onAddExpense: (expense: Expense) => void
   onUpdateExpense: (expense: Expense) => void
   onDeleteExpense: (expenseId: string) => void
+  onAddPackingItem: (item: PackingItem) => void
+  onTogglePackingItem: (itemId: string) => void
 }
 
 function TripDetails({
@@ -40,6 +45,7 @@ function TripDetails({
   budgetItems,
   participants,
   expenses,
+  packingItems,
   onDeleteTrip,
   onDeleteActivity,
   onMoveActivity,
@@ -51,6 +57,8 @@ function TripDetails({
   onAddExpense,
   onUpdateExpense,
   onDeleteExpense,
+  onAddPackingItem,
+  onTogglePackingItem,
 }: TripDetailsProps) {
   const { tripId } = useParams()
   const navigate = useNavigate()
@@ -221,6 +229,13 @@ function TripDetails({
         onDeleteActivity={onDeleteActivity}
         onMoveActivity={onMoveActivity}
         onReorderActivity={onReorderActivity}
+      />
+
+      <PackingSection
+        trip={trip}
+        items={packingItems}
+        onAddItem={onAddPackingItem}
+        onToggleItem={onTogglePackingItem}
       />
     </div>
   )
