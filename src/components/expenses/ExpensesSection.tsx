@@ -9,6 +9,7 @@ import type { Participant } from '../../types/participant'
 import type { Trip } from '../../types/trip'
 import { filterExpenses, sumExpenses } from '../../utils/expenseSummary'
 import { formatCurrencyExact, formatShortDate } from '../../utils/format'
+import { splitExpenseEqually } from '../../utils/splitExpense'
 
 interface ExpensesSectionProps {
   trip: Trip
@@ -233,6 +234,15 @@ function ExpensesSection({
                         </span>{' '}
                         · Shared by{' '}
                         {expense.sharedByIds.map(participantName).join(', ')}
+                      </p>
+                      <p className="mt-1 break-words text-sm text-muted">
+                        Each share:{' '}
+                        {splitExpenseEqually(expense)
+                            .map(
+                            (share) =>
+                                `${participantName(share.participantId)} ${formatCurrencyExact(share.amount)}`,
+                            )
+                            .join(' · ')}
                       </p>
                       {expense.notes && (
                         <p className="mt-1 break-words text-sm text-muted">
