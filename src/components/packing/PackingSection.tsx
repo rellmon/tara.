@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import Button from '../ui/Button'
 import PackingItemRow from './PackingItemRow'
+import { PACKING_TEMPLATES } from '../../data/packingTemplates'
 import {
   PACKING_CATEGORIES,
   PACKING_CATEGORY_LABELS,
@@ -12,6 +13,7 @@ import {
   getPackingProgress,
   validatePackingItemName,
 } from '../../utils/packing'
+import { getNewTemplateItems } from '../../utils/packingTemplates'
 
 interface PackingSectionProps {
   trip: Trip
@@ -36,6 +38,10 @@ function PackingSection({
   const [name, setName] = useState('')
   const [category, setCategory] = useState<PackingCategory>('essentials')
   const [error, setError] = useState<string | undefined>(undefined)
+  const [templateId, setTemplateId] = useState(PACKING_TEMPLATES[0].id)
+  const [templateMessage, setTemplateMessage] = useState<string | undefined>(
+    undefined,
+  )
 
   const tripItems = items.filter((item) => item.tripId === trip.id)
   const progress = getPackingProgress(tripItems)
@@ -62,6 +68,37 @@ function PackingSection({
 
     // Clear the name, but keep the category for quick repeated entry.
     setName('')
+  }
+
+  function handleApplyTemplate() {
+    const template = PACKING_TEMPLATES.find((t) => t.id === templateId)
+    if (!template) return
+
+    const newItems = getNewTemplateItems(template, tripItems)
+
+    for (const item of newItems) {
+      onAddItem({
+        id: crypto.randomUUID(),
+        tripId: trip.id,
+        name: item.name,
+        category: item.category,
+        packed: false,
+      })
+    }
+
+    const skipped = template.items.length - newItems.length
+
+    if (newItems.length === 0) {
+      setTemplateMessage(
+        `Everything from the ${template.name} template is already on your list.`,
+      )
+      return
+    }
+
+    setTemplateMessage(
+      `Added ${newItems.length} ${newItems.length === 1 ? 'item' : 'items'} from the ${template.name} template.` +
+        (skipped > 0 ? ` ${skipped} already on your list.` : ''),
+    )
   }
 
   return (
@@ -122,6 +159,46 @@ function PackingSection({
         </div>
         <Button type="submit">Add item</Button>
       </form>
+
+      <div className="mt-4 rounded-2xl border border-line bg-white p-5">
+        <label htmlFor="packing-template" className="text-sm font-medium">
+          Start from a template
+        </label>
+        <p className="mt-1 text-xs text-muted">
+          Adds common items for the trip type. Items already on your list are
+          skipped.
+        </p>
+        <div className="mt-2 flex flex-col gap-3 sm:flex-row">
+          <select
+            id="packing-template"
+            value={templateId}
+            onChange={(e) => {
+              setTemplateId(e.target.value)
+              setTemplateMessage(undefined)
+            }}
+            className="w-full rounded-xl border border-line bg-white px-4 py-2.5 text-charcoal focus-visible:outline-2 focus-visible:outline-brand-600"
+          >
+            {PACKING_TEMPLATES.map((template) => (
+              <option key={template.id} value={template.id}>
+                {template.name} ({template.items.length} items)
+              </option>
+            ))}
+          </select>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={handleApplyTemplate}
+            className="shrink-0"
+          >
+            Add template items
+          </Button>
+        </div>
+        {templateMessage && (
+          <p role="status" className="mt-3 text-sm text-brand-700">
+            {templateMessage}
+          </p>
+        )}
+      </div>
 
       {tripItems.length === 0 ? (
         <p className="mt-4 rounded-2xl border border-dashed border-line p-5 text-sm text-muted">
