@@ -37,6 +37,8 @@ interface TripDetailsProps {
   onDeleteExpense: (expenseId: string) => void
   onAddPackingItem: (item: PackingItem) => void
   onTogglePackingItem: (itemId: string) => void
+  onUpdatePackingItem: (item: PackingItem) => void
+onDeletePackingItem: (itemId: string) => void
 }
 
 function TripDetails({
@@ -59,6 +61,8 @@ function TripDetails({
   onDeleteExpense,
   onAddPackingItem,
   onTogglePackingItem,
+  onUpdatePackingItem,
+  onDeletePackingItem,
 }: TripDetailsProps) {
   const { tripId } = useParams()
   const navigate = useNavigate()
@@ -236,6 +240,8 @@ function TripDetails({
         items={packingItems}
         onAddItem={onAddPackingItem}
         onToggleItem={onTogglePackingItem}
+        onUpdateItem={onUpdatePackingItem}
+        onDeleteItem={onDeletePackingItem}
       />
     </div>
   )

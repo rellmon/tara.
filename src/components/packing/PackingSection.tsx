@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import Button from '../ui/Button'
+import PackingItemRow from './PackingItemRow'
 import {
   PACKING_CATEGORIES,
   PACKING_CATEGORY_LABELS,
@@ -17,6 +18,8 @@ interface PackingSectionProps {
   items: PackingItem[]
   onAddItem: (item: PackingItem) => void
   onToggleItem: (itemId: string) => void
+  onUpdateItem: (item: PackingItem) => void
+  onDeleteItem: (itemId: string) => void
 }
 
 const inputClasses =
@@ -27,6 +30,8 @@ function PackingSection({
   items,
   onAddItem,
   onToggleItem,
+  onUpdateItem,
+  onDeleteItem,
 }: PackingSectionProps) {
   const [name, setName] = useState('')
   const [category, setCategory] = useState<PackingCategory>('essentials')
@@ -154,25 +159,13 @@ function PackingSection({
                 </h3>
                 <ul className="mt-2 space-y-2">
                   {group.items.map((item) => (
-                    <li key={item.id}>
-                      <label className="flex min-h-11 cursor-pointer items-center gap-3 rounded-2xl border border-line bg-white px-4 py-2">
-                        <input
-                          type="checkbox"
-                          checked={item.packed}
-                          onChange={() => onToggleItem(item.id)}
-                          className="h-5 w-5 shrink-0 accent-brand-600"
-                        />
-                        <span
-                          className={`min-w-0 break-words ${
-                            item.packed
-                              ? 'text-muted line-through'
-                              : 'text-charcoal'
-                          }`}
-                        >
-                          {item.name}
-                        </span>
-                      </label>
-                    </li>
+                    <PackingItemRow
+                      key={item.id}
+                      item={item}
+                      onToggle={onToggleItem}
+                      onUpdate={onUpdateItem}
+                      onDelete={onDeleteItem}
+                    />
                   ))}
                 </ul>
               </div>

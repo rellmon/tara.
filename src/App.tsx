@@ -205,6 +205,20 @@ function App() {
     )
   }
 
+  function updatePackingItem(updatedItem: PackingItem) {
+  setPackingItems((previousItems) =>
+    previousItems.map((item) =>
+      item.id === updatedItem.id ? updatedItem : item,
+    ),
+  )
+}
+
+function deletePackingItem(itemId: string) {
+  setPackingItems((previousItems) =>
+    previousItems.filter((item) => item.id !== itemId),
+  )
+}
+
   return (
     <Routes>
       <Route element={<Layout />}>
@@ -235,6 +249,8 @@ function App() {
               onDeleteExpense={deleteExpense}
               onAddPackingItem={addPackingItem}
               onTogglePackingItem={togglePackingItem}
+              onUpdatePackingItem={updatePackingItem}
+              onDeletePackingItem={deletePackingItem}
             />
           }
         />
