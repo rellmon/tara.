@@ -12,6 +12,7 @@ import type { ItineraryActivity } from '../types/itinerary'
 import type { Participant } from '../types/participant'
 import type { Trip } from '../types/trip'
 import { formatCurrency, formatDateRange } from '../utils/format'
+import BudgetVsActual from '../components/budget/BudgetVsActual'
 
 interface TripDetailsProps {
   trips: Trip[]
@@ -198,6 +199,13 @@ function TripDetails({
         onAddExpense={onAddExpense}
         onUpdateExpense={onUpdateExpense}
         onDeleteExpense={onDeleteExpense}
+      />
+
+      <BudgetVsActual
+        trip={trip}
+        activities={activities}
+        budgetItems={budgetItems}
+        expenses={expenses}
       />
 
       <ItinerarySection
