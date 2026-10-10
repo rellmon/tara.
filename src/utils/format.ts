@@ -33,3 +33,8 @@ export function formatCurrencyExact(amount: number): string {
     maximumFractionDigits: 2,
   }).format(amount)
 }
+
+// "2026-11-14" -> "Nov 14, 2026"
+export function formatShortDate(date: string): string {
+  return format(parseISO(date), 'MMM d, yyyy')
+}

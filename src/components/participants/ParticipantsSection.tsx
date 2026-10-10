@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Users } from 'lucide-react'
 import Button from '../ui/Button'
+import type { Expense } from '../../types/expense'
 import type { Participant } from '../../types/participant'
 import type { Trip } from '../../types/trip'
 import { validateParticipantName } from '../../utils/validateParticipant'
@@ -9,6 +10,7 @@ import { validateParticipantName } from '../../utils/validateParticipant'
 interface ParticipantsSectionProps {
   trip: Trip
   participants: Participant[]
+  expenses: Expense[]
   onAddParticipant: (participant: Participant) => void
   onDeleteParticipant: (participantId: string) => void
 }
@@ -16,11 +18,13 @@ interface ParticipantsSectionProps {
 function ParticipantsSection({
   trip,
   participants,
+  expenses,
   onAddParticipant,
   onDeleteParticipant,
 }: ParticipantsSectionProps) {
   const [name, setName] = useState('')
   const [error, setError] = useState<string | undefined>(undefined)
+  const [removeError, setRemoveError] = useState<string | undefined>(undefined)
 
   const tripParticipants = participants.filter(
     (participant) => participant.tripId === trip.id,
@@ -28,6 +32,7 @@ function ParticipantsSection({
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    setRemoveError(undefined)
 
     const validationError = validateParticipantName(
       name,
@@ -45,11 +50,26 @@ function ParticipantsSection({
   }
 
   function handleDelete(participant: Participant) {
+    const isInExpense = expenses.some(
+      (expense) =>
+        expense.tripId === trip.id &&
+        (expense.paidById === participant.id ||
+          expense.sharedByIds.includes(participant.id)),
+    )
+
+    if (isInExpense) {
+      setRemoveError(
+        `${participant.name} is part of recorded expenses, so they can't be removed.`,
+      )
+      return
+    }
+
     const confirmed = window.confirm(
       `Remove "${participant.name}" from this trip?`,
     )
     if (!confirmed) return
 
+    setRemoveError(undefined)
     onDeleteParticipant(participant.id)
   }
 
@@ -95,6 +115,12 @@ function ParticipantsSection({
           </p>
         )}
       </form>
+
+      {removeError && (
+        <p role="alert" className="mt-3 text-sm text-red-700">
+          {removeError}
+        </p>
+      )}
 
       {tripParticipants.length === 0 ? (
         <p className="mt-4 rounded-2xl border border-dashed border-line p-5 text-sm text-muted">

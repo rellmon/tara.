@@ -11,6 +11,7 @@ import AddActivity from './pages/AddActivity'
 import EditActivity from './pages/EditActivity'
 import { loadActivities, saveActivities } from './services/activityStorage'
 import { loadBudgetItems, saveBudgetItems } from './services/budgetStorage'
+import { loadExpenses, saveExpenses } from './services/expenseStorage'
 import {
   loadParticipants,
   saveParticipants,
@@ -22,6 +23,7 @@ import {
   reorderActivity,
 } from './utils/itinerary'
 import type { BudgetItem } from './types/budget'
+import type { Expense } from './types/expense'
 import type { ItineraryActivity } from './types/itinerary'
 import type { Participant } from './types/participant'
 import type { Trip } from './types/trip'
@@ -33,6 +35,7 @@ function App() {
   const [budgetItems, setBudgetItems] = useState<BudgetItem[]>(loadBudgetItems)
   const [participants, setParticipants] =
     useState<Participant[]>(loadParticipants)
+  const [expenses, setExpenses] = useState<Expense[]>(loadExpenses)
 
   useEffect(() => {
     saveTrips(trips)
@@ -49,6 +52,10 @@ function App() {
   useEffect(() => {
     saveParticipants(participants)
   }, [participants])
+
+  useEffect(() => {
+    saveExpenses(expenses)
+  }, [expenses])
 
   function addTrip(trip: Trip) {
     setTrips((previousTrips) => [trip, ...previousTrips])
@@ -74,6 +81,9 @@ function App() {
     )
     setParticipants((previousParticipants) =>
       previousParticipants.filter((participant) => participant.tripId !== tripId),
+    )
+    setExpenses((previousExpenses) =>
+      previousExpenses.filter((expense) => expense.tripId !== tripId),
     )
   }
 
@@ -154,6 +164,10 @@ function App() {
     )
   }
 
+  function addExpense(expense: Expense) {
+    setExpenses((previousExpenses) => [...previousExpenses, expense])
+  }
+
   return (
     <Routes>
       <Route element={<Layout />}>
@@ -169,6 +183,7 @@ function App() {
               activities={activities}
               budgetItems={budgetItems}
               participants={participants}
+              expenses={expenses}
               onDeleteTrip={deleteTrip}
               onDeleteActivity={deleteActivity}
               onMoveActivity={handleMoveActivity}
@@ -177,6 +192,7 @@ function App() {
               onDeleteBudgetItem={deleteBudgetItem}
               onAddParticipant={addParticipant}
               onDeleteParticipant={deleteParticipant}
+              onAddExpense={addExpense}
             />
           }
         />

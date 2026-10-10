@@ -3,9 +3,11 @@ import { ArrowLeft, CalendarDays, MapPin, Users, Wallet } from 'lucide-react'
 import BudgetSection from '../components/budget/BudgetSection'
 import DailyBudget from '../components/budget/DailyBudget'
 import EstimatedBreakdown from '../components/budget/EstimatedBreakdown'
+import ExpensesSection from '../components/expenses/ExpensesSection'
 import ItinerarySection from '../components/itinerary/ItinerarySection'
 import ParticipantsSection from '../components/participants/ParticipantsSection'
 import type { BudgetItem } from '../types/budget'
+import type { Expense } from '../types/expense'
 import type { ItineraryActivity } from '../types/itinerary'
 import type { Participant } from '../types/participant'
 import type { Trip } from '../types/trip'
@@ -16,6 +18,7 @@ interface TripDetailsProps {
   activities: ItineraryActivity[]
   budgetItems: BudgetItem[]
   participants: Participant[]
+  expenses: Expense[]
   onDeleteTrip: (tripId: string) => void
   onDeleteActivity: (activityId: string) => void
   onMoveActivity: (activityId: string, direction: -1 | 1) => void
@@ -24,6 +27,7 @@ interface TripDetailsProps {
   onDeleteBudgetItem: (itemId: string) => void
   onAddParticipant: (participant: Participant) => void
   onDeleteParticipant: (participantId: string) => void
+  onAddExpense: (expense: Expense) => void
 }
 
 function TripDetails({
@@ -31,6 +35,7 @@ function TripDetails({
   activities,
   budgetItems,
   participants,
+  expenses,
   onDeleteTrip,
   onDeleteActivity,
   onMoveActivity,
@@ -39,6 +44,7 @@ function TripDetails({
   onDeleteBudgetItem,
   onAddParticipant,
   onDeleteParticipant,
+  onAddExpense,
 }: TripDetailsProps) {
   const { tripId } = useParams()
   const navigate = useNavigate()
@@ -157,6 +163,7 @@ function TripDetails({
       <ParticipantsSection
         trip={trip}
         participants={participants}
+        expenses={expenses}
         onAddParticipant={onAddParticipant}
         onDeleteParticipant={onDeleteParticipant}
       />
@@ -178,6 +185,13 @@ function TripDetails({
         items={budgetItems}
         onAddItem={onAddBudgetItem}
         onDeleteItem={onDeleteBudgetItem}
+      />
+
+      <ExpensesSection
+        trip={trip}
+        expenses={expenses}
+        participants={participants}
+        onAddExpense={onAddExpense}
       />
 
       <ItinerarySection
