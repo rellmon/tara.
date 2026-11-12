@@ -10,6 +10,7 @@ export interface TripFormValues {
   startDate: string
   endDate: string
   description: string
+  coverImage: string
   travelerCount: number
   estimatedBudgetPerPerson: number
 }
@@ -35,6 +36,7 @@ function TripForm({
   const [startDate, setStartDate] = useState(initialValues?.startDate ?? '')
   const [endDate, setEndDate] = useState(initialValues?.endDate ?? '')
   const [description, setDescription] = useState(initialValues?.description ?? '')
+  const [coverImage, setCoverImage] = useState(initialValues?.coverImage ?? '')
   const [travelerCount, setTravelerCount] = useState(
     String(initialValues?.travelerCount ?? 2),
   )
@@ -52,6 +54,7 @@ function TripForm({
       startDate,
       endDate,
       description: description.trim(),
+      coverImage: coverImage.trim(),
       travelerCount: Number(travelerCount),
       estimatedBudgetPerPerson: budget === '' ? 0 : Number(budget),
     }
@@ -195,6 +198,33 @@ function TripForm({
             </p>
           )}
         </div>
+      </div>
+
+      <div>
+        <label htmlFor="coverImage" className="text-sm font-medium">
+          Cover image link (optional)
+        </label>
+        <input
+          id="coverImage"
+          type="url"
+          value={coverImage}
+          onChange={(e) => setCoverImage(e.target.value)}
+          placeholder="https://"
+          aria-invalid={errors.coverImage ? true : undefined}
+          aria-describedby={
+            errors.coverImage ? 'coverImage-error' : 'coverImage-hint'
+          }
+          className={inputClasses}
+        />
+        <p id="coverImage-hint" className="mt-1 text-xs text-muted">
+          Paste a link to a photo. It loads from that website, and a placeholder
+          shows if the link doesn't work.
+        </p>
+        {errors.coverImage && (
+          <p id="coverImage-error" className={errorClasses}>
+            {errors.coverImage}
+          </p>
+        )}
       </div>
 
       <div>

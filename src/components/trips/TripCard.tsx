@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { CalendarDays, MapPin, Users, Wallet } from 'lucide-react'
+import TripCover from './TripCover'
 import type { Trip } from '../../types/trip'
 import { formatCurrency, formatDateRange } from '../../utils/format'
 
@@ -9,12 +10,8 @@ interface TripCardProps {
 
 function TripCard({ trip }: TripCardProps) {
   return (
-    <article className="relative overflow-hidden rounded-2xl border border-line bg-white">
-      <div className="flex h-36 items-end bg-sage p-4">
-        <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-medium capitalize text-brand-900">
-          {trip.status}
-        </span>
-      </div>
+    <article className="relative overflow-hidden rounded-2xl border border-line bg-white transition-shadow focus-within:shadow-md hover:shadow-md">
+      <TripCover trip={trip} className="h-36" />
 
       <div className="p-5">
         <h2 className="break-words font-display text-xl font-bold text-brand-900">
