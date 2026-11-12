@@ -9,6 +9,10 @@ import ExpensesSection from '../components/expenses/ExpensesSection'
 import ItinerarySection from '../components/itinerary/ItinerarySection'
 import PackingSection from '../components/packing/PackingSection'
 import ParticipantsSection from '../components/participants/ParticipantsSection'
+import SectionAnchor from '../components/trips/SectionAnchor'
+import TripCover from '../components/trips/TripCover'
+import TripSectionNav from '../components/trips/TripSectionNav'
+import { useConfirm } from '../components/ui/useConfirm'
 import type { BudgetItem } from '../types/budget'
 import type { Expense } from '../types/expense'
 import type { ItineraryActivity } from '../types/itinerary'
@@ -16,8 +20,6 @@ import type { PackingItem } from '../types/packing'
 import type { Participant } from '../types/participant'
 import type { Trip } from '../types/trip'
 import { formatCurrency, formatDateRange } from '../utils/format'
-import TripCover from '../components/trips/TripCover'
-import { useConfirm } from '../components/ui/useConfirm'
 
 interface TripDetailsProps {
   trips: Trip[]
@@ -40,7 +42,7 @@ interface TripDetailsProps {
   onAddPackingItem: (item: PackingItem) => void
   onTogglePackingItem: (itemId: string) => void
   onUpdatePackingItem: (item: PackingItem) => void
-onDeletePackingItem: (itemId: string) => void
+  onDeletePackingItem: (itemId: string) => void
 }
 
 function TripDetails({
@@ -180,71 +182,82 @@ function TripDetails({
         </div>
       </dl>
 
-      <ParticipantsSection
-        trip={trip}
-        participants={participants}
-        expenses={expenses}
-        onAddParticipant={onAddParticipant}
-        onDeleteParticipant={onDeleteParticipant}
-      />
+      <TripSectionNav />
 
-      <EstimatedBreakdown
-        trip={trip}
-        activities={activities}
-        budgetItems={budgetItems}
-      />
+      <SectionAnchor id="trip-travelers">
+        <ParticipantsSection
+          trip={trip}
+          participants={participants}
+          expenses={expenses}
+          onAddParticipant={onAddParticipant}
+          onDeleteParticipant={onDeleteParticipant}
+        />
+      </SectionAnchor>
 
-      <DailyBudget
-        trip={trip}
-        activities={activities}
-        budgetItems={budgetItems}
-      />
+      <SectionAnchor id="trip-costs">
+        <EstimatedBreakdown
+          trip={trip}
+          activities={activities}
+          budgetItems={budgetItems}
+        />
+        <DailyBudget
+          trip={trip}
+          activities={activities}
+          budgetItems={budgetItems}
+        />
+      </SectionAnchor>
 
-      <BudgetSection
-        trip={trip}
-        items={budgetItems}
-        onAddItem={onAddBudgetItem}
-        onDeleteItem={onDeleteBudgetItem}
-      />
+      <SectionAnchor id="trip-budget">
+        <BudgetSection
+          trip={trip}
+          items={budgetItems}
+          onAddItem={onAddBudgetItem}
+          onDeleteItem={onDeleteBudgetItem}
+        />
+      </SectionAnchor>
 
-      <ExpensesSection
-        trip={trip}
-        expenses={expenses}
-        participants={participants}
-        onAddExpense={onAddExpense}
-        onUpdateExpense={onUpdateExpense}
-        onDeleteExpense={onDeleteExpense}
-      />
+      <SectionAnchor id="trip-expenses">
+        <ExpensesSection
+          trip={trip}
+          expenses={expenses}
+          participants={participants}
+          onAddExpense={onAddExpense}
+          onUpdateExpense={onUpdateExpense}
+          onDeleteExpense={onDeleteExpense}
+        />
+        <BalancesSection
+          trip={trip}
+          expenses={expenses}
+          participants={participants}
+        />
+        <BudgetVsActual
+          trip={trip}
+          activities={activities}
+          budgetItems={budgetItems}
+          expenses={expenses}
+        />
+      </SectionAnchor>
 
-      <BalancesSection
-        trip={trip}
-        expenses={expenses}
-        participants={participants}
-      />
+      <SectionAnchor id="trip-itinerary">
+        <ItinerarySection
+          trip={trip}
+          activities={activities}
+          onDeleteActivity={onDeleteActivity}
+          onMoveActivity={onMoveActivity}
+          onReorderActivity={onReorderActivity}
+        />
+      </SectionAnchor>
 
-      <BudgetVsActual
-        trip={trip}
-        activities={activities}
-        budgetItems={budgetItems}
-        expenses={expenses}
-      />
-
-      <ItinerarySection
-        trip={trip}
-        activities={activities}
-        onDeleteActivity={onDeleteActivity}
-        onMoveActivity={onMoveActivity}
-        onReorderActivity={onReorderActivity}
-      />
-
-      <PackingSection
-        trip={trip}
-        items={packingItems}
-        onAddItem={onAddPackingItem}
-        onToggleItem={onTogglePackingItem}
-        onUpdateItem={onUpdatePackingItem}
-        onDeleteItem={onDeletePackingItem}
-      />
+      <SectionAnchor id="trip-packing">
+        <PackingSection
+          trip={trip}
+          items={packingItems}
+          onAddItem={onAddPackingItem}
+          onToggleItem={onTogglePackingItem}
+          onUpdateItem={onUpdatePackingItem}
+          onDeleteItem={onDeletePackingItem}
+        />
+      </SectionAnchor>
     </div>
   )
 }
