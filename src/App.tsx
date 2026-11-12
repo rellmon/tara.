@@ -33,6 +33,7 @@ import type { PackingItem } from './types/packing'
 import type { Participant } from './types/participant'
 import type { Poll, Vote } from './types/poll'
 import type { Trip } from './types/trip'
+import NotFound from './pages/NotFound'
 
 function App() {
   const [trips, setTrips] = useState<Trip[]>(loadTrips)
@@ -343,6 +344,7 @@ function App() {
             />
           }
         />
+        <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
   )
