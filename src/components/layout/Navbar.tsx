@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 
@@ -9,9 +9,24 @@ const navLinks = [
   { to: '/polls', label: 'Polls' },
 ]
 
-
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
+  const menuButtonRef = useRef<HTMLButtonElement>(null)
+
+  // Esc closes the mobile menu and returns focus to its button.
+  useEffect(() => {
+    if (!isOpen) return
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setIsOpen(false)
+        menuButtonRef.current?.focus()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [isOpen])
 
   const linkClasses = ({ isActive }: { isActive: boolean }) =>
     `rounded-full px-4 py-3 text-sm font-medium transition-colors md:py-2 ${
@@ -39,9 +54,11 @@ function Navbar() {
         {/* Mobile menu button */}
         <button
           type="button"
+          ref={menuButtonRef}
           className="rounded-full p-2.5 text-charcoal hover:bg-sage md:hidden"
           aria-label={isOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={isOpen}
+          aria-controls="mobile-menu"
           onClick={() => setIsOpen(!isOpen)}
         >
           {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -51,6 +68,7 @@ function Navbar() {
       {/* Mobile menu panel */}
       {isOpen && (
         <nav
+          id="mobile-menu"
           className="flex flex-col gap-1 border-t border-line px-4 py-3 md:hidden"
           aria-label="Mobile"
         >
