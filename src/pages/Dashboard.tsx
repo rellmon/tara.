@@ -35,7 +35,7 @@ function Dashboard({ trips }: DashboardProps) {
       {/* Welcome */}
       <section>
         <p className="text-sm font-medium text-brand-600">Dashboard</p>
-        <h1 className="mt-1 font-display text-4xl font-bold text-brand-900">
+        <h1 className="mt-1 font-display text-3xl font-bold tracking-tight text-brand-900 sm:text-4xl">
           Tara na! Where to next?
         </h1>
         <p className="mt-2 max-w-xl text-muted">

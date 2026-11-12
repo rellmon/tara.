@@ -65,7 +65,7 @@ function Polls({
 
   return (
     <div>
-      <h1 className="font-display text-4xl font-bold text-brand-600">Polls</h1>
+      <h1 className="font-display text-3xl font-bold tracking-tight text-brand-900 sm:text-4xl">Polls</h1>
       <p className="mt-2 max-w-2xl text-muted">
         Can't decide where to go? Make a poll.
       </p>

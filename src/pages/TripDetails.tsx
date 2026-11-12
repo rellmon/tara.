@@ -117,7 +117,7 @@ function TripDetails({
 
       <TripCover trip={trip} className="mt-4 h-48 rounded-3xl" />
 
-      <h1 className="mt-6 break-words font-display text-4xl font-bold text-brand-900">
+      <h1 className="mt-6 break-words font-display text-3xl font-bold tracking-tight text-brand-900 sm:text-4xl">
         {trip.title}
       </h1>
       {trip.description && (

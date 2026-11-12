@@ -23,9 +23,33 @@
 }
 
 @layer base {
+  html {
+    /* Keeps focused elements and anchors clear of the sticky navbar (4rem). */
+    scroll-padding-top: 5rem;
+  }
+
   body {
     background-color: var(--color-cream);
     color: var(--color-charcoal);
     font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    /* Digits share one width, so amounts line up in lists. */
+    font-variant-numeric: tabular-nums;
+  }
+
+  h1,
+  h2 {
+    font-family: var(--font-display);
+  }
+
+  /* Avoids a single orphan word on the last line of a heading. */
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
   }
 }

@@ -61,7 +61,7 @@ function AddActivity({ trips, onAddActivity }: AddActivityProps) {
         <ArrowLeft size={16} aria-hidden="true" />
         Back to trip
       </Link>
-      <h1 className="mt-4 font-display text-4xl font-bold text-brand-600">
+      <h1 className="mt-4 font-display text-3xl font-bold tracking-tight text-brand-900 sm:text-4xl">
         Add activity
       </h1>
       <p className="mt-2 mb-8 text-muted">{trip.title}</p>

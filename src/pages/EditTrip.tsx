@@ -36,7 +36,7 @@ function EditTrip({ trips, onUpdateTrip }: EditTripProps) {
 
   return (
     <div className="mx-auto max-w-xl">
-      <h1 className="font-display text-4xl font-bold text-brand-600">
+      <h1 className="font-display text-3xl font-bold tracking-tight text-brand-900 sm:text-4xl">
         Edit trip
       </h1>
       <p className="mt-2 mb-8 text-muted">Update the details for {trip.title}.</p>

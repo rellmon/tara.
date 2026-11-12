@@ -45,7 +45,7 @@ function Home() {
         <p className="inline-block rounded-full bg-sage px-4 py-1 text-sm font-medium text-brand-900">
           Plan together. Explore together.
         </p>
-        <h1 className="mx-auto mt-6 max-w-3xl font-display text-4xl font-bold leading-tight text-brand-900 sm:text-6xl">
+        <h1 className="mx-auto mt-6 max-w-3xl font-display text-4xl font-bold leading-tight tracking-tight text-brand-900 sm:text-6xl">
           Your next adventure starts here.
         </h1>
         <p className="mx-auto mt-5 max-w-xl text-lg text-muted">
