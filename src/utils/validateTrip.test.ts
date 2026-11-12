@@ -52,3 +52,49 @@ describe('validateTripForm', () => {
     expect(errors.endDate).toBeDefined()
   })
 })
+
+describe('validateTripForm dates and numbers', () => {
+  it('accepts a one-day trip', () => {
+    const errors = validateTripForm(
+      makeInput({ startDate: '2026-11-14', endDate: '2026-11-14' }),
+    )
+
+    expect(errors).toEqual({})
+  })
+
+  it('rejects empty and impossible dates', () => {
+    const empty = validateTripForm(makeInput({ startDate: '', endDate: '' }))
+    const impossible = validateTripForm(makeInput({ startDate: '2026-02-30' }))
+
+    expect(empty.startDate).toBeDefined()
+    expect(empty.endDate).toBeDefined()
+    expect(impossible.startDate).toBeDefined()
+  })
+
+  it('does not report an order error when a date is already invalid', () => {
+    const errors = validateTripForm(
+      makeInput({ startDate: 'nope', endDate: '2026-11-14' }),
+    )
+
+    expect(errors.startDate).toBeDefined()
+    expect(errors.endDate).toBeUndefined()
+  })
+
+  it('rejects zero, negative, fractional, and invalid traveler counts', () => {
+    for (const travelerCount of [0, -1, 2.5, NaN]) {
+      expect(validateTripForm(makeInput({ travelerCount })).travelerCount).toBeDefined()
+    }
+  })
+
+  it('accepts a budget of zero and rejects negative or invalid budgets', () => {
+    expect(
+      validateTripForm(makeInput({ estimatedBudgetPerPerson: 0 })).estimatedBudgetPerPerson,
+    ).toBeUndefined()
+
+    for (const estimatedBudgetPerPerson of [-1, NaN, Infinity]) {
+      expect(
+        validateTripForm(makeInput({ estimatedBudgetPerPerson })).estimatedBudgetPerPerson,
+      ).toBeDefined()
+    }
+  })
+})
