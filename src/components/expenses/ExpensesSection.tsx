@@ -2,6 +2,7 @@ import { useState } from 'react'
 import ExpenseForm from './ExpenseForm'
 import type { ExpenseFormValues } from './ExpenseForm'
 import ExpenseSummary from './ExpenseSummary'
+import { useConfirm } from '../ui/useConfirm'
 import { BUDGET_CATEGORIES, BUDGET_CATEGORY_LABELS } from '../../types/budget'
 import type { BudgetCategory } from '../../types/budget'
 import type { Expense } from '../../types/expense'
@@ -31,6 +32,7 @@ function ExpensesSection({
   onUpdateExpense,
   onDeleteExpense,
 }: ExpensesSectionProps) {
+  const confirm = useConfirm()
   const [editingId, setEditingId] = useState<string | null>(null)
   const [categoryFilter, setCategoryFilter] = useState<BudgetCategory | 'all'>(
     'all',
@@ -76,10 +78,13 @@ function ExpensesSection({
     setEditingId(null)
   }
 
-  function handleDelete(expense: Expense) {
-    const confirmed = window.confirm(
-      `Delete "${expense.name}"? This can't be undone.`,
-    )
+  async function handleDelete(expense: Expense) {
+    const confirmed = await confirm({
+      title: 'Delete this expense?',
+      message: `"${expense.name}" will be removed, and balances will be recalculated.`,
+      confirmLabel: 'Delete expense',
+      destructive: true,
+    })
     if (!confirmed) return
 
     if (editingId === expense.id) setEditingId(null)

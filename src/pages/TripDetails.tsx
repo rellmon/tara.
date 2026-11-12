@@ -16,6 +16,8 @@ import type { PackingItem } from '../types/packing'
 import type { Participant } from '../types/participant'
 import type { Trip } from '../types/trip'
 import { formatCurrency, formatDateRange } from '../utils/format'
+import TripCover from '../components/trips/TripCover'
+import { useConfirm } from '../components/ui/useConfirm'
 
 interface TripDetailsProps {
   trips: Trip[]
@@ -66,6 +68,7 @@ function TripDetails({
 }: TripDetailsProps) {
   const { tripId } = useParams()
   const navigate = useNavigate()
+  const confirm = useConfirm()
   const trip = trips.find((t) => t.id === tripId)
 
   if (!trip) {
@@ -87,10 +90,13 @@ function TripDetails({
     )
   }
 
-  function handleDelete() {
-    const confirmed = window.confirm(
-      `Delete "${trip!.title}"? This can't be undone.`,
-    )
+  async function handleDelete() {
+    const confirmed = await confirm({
+      title: 'Delete this trip?',
+      message: `"${trip!.title}" and everything in it (itinerary, budget, expenses, packing list, travelers, and attached polls) will be deleted. This can't be undone.`,
+      confirmLabel: 'Delete trip',
+      destructive: true,
+    })
     if (!confirmed) return
 
     onDeleteTrip(trip!.id)
@@ -109,11 +115,7 @@ function TripDetails({
         My Trips
       </Link>
 
-      <div className="mt-4 flex h-48 items-end rounded-3xl bg-sage p-6">
-        <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-medium capitalize text-brand-900">
-          {trip.status}
-        </span>
-      </div>
+      <TripCover trip={trip} className="mt-4 h-48 rounded-3xl" />
 
       <h1 className="mt-6 break-words font-display text-4xl font-bold text-brand-900">
         {trip.title}

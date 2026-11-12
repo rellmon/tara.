@@ -13,7 +13,6 @@ function CreateTrip({ onAddTrip }: CreateTripProps) {
   function handleSubmit(values: TripFormValues) {
     const newTrip: Trip = {
       id: crypto.randomUUID(),
-      coverImage: '',
       status: 'planning',
       ...values,
     }

@@ -1,8 +1,10 @@
+import { useState } from 'react'
+import PollCard from '../components/polls/PollCard'
 import PollForm from '../components/polls/PollForm'
 import type { PollFormValues } from '../components/polls/PollForm'
+import { useConfirm } from '../components/ui/useConfirm'
 import type { Poll, Vote } from '../types/poll'
 import type { Trip } from '../types/trip'
-import { formatShortDate } from '../utils/format'
 
 interface PollsProps {
   polls: Poll[]
@@ -10,9 +12,22 @@ interface PollsProps {
   trips: Trip[]
   onAddPoll: (poll: Poll) => void
   onDeletePoll: (pollId: string) => void
+  onCastVote: (pollId: string, optionId: string, voterName: string) => void
+  onClosePoll: (pollId: string) => void
 }
 
-function Polls({ polls, votes, trips, onAddPoll, onDeletePoll }: PollsProps) {
+function Polls({
+  polls,
+  votes,
+  trips,
+  onAddPoll,
+  onDeletePoll,
+  onCastVote,
+  onClosePoll,
+}: PollsProps) {
+  const confirm = useConfirm()
+  const [voterName, setVoterName] = useState('')
+
   const sortedPolls = [...polls].sort((a, b) =>
     b.createdAt.localeCompare(a.createdAt),
   )
@@ -36,10 +51,13 @@ function Polls({ polls, votes, trips, onAddPoll, onDeletePoll }: PollsProps) {
     })
   }
 
-  function handleDelete(poll: Poll) {
-    const confirmed = window.confirm(
-      `Delete "${poll.question}" and its votes? This can't be undone.`,
-    )
+  async function handleDelete(poll: Poll) {
+    const confirmed = await confirm({
+      title: 'Delete this poll?',
+      message: `"${poll.question}" and its votes will be deleted. This can't be undone.`,
+      confirmLabel: 'Delete poll',
+      destructive: true,
+    })
     if (!confirmed) return
 
     onDeletePoll(poll.id)
@@ -64,63 +82,42 @@ function Polls({ polls, votes, trips, onAddPoll, onDeletePoll }: PollsProps) {
         Your polls
       </h2>
 
+      <div className="mt-4 max-w-md">
+        <label htmlFor="voter-name" className="text-sm font-medium">
+          Your name (to vote)
+        </label>
+        <input
+          id="voter-name"
+          type="text"
+          value={voterName}
+          onChange={(e) => setVoterName(e.target.value)}
+          placeholder="Alex"
+          className="mt-1 w-full rounded-xl border border-line bg-white px-4 py-2.5 text-charcoal focus-visible:outline-2 focus-visible:outline-brand-600"
+        />
+        <p className="mt-1 text-xs text-muted">
+          Typed on this device. It isn't a verified identity, so anyone using
+          this browser can vote under any name.
+        </p>
+      </div>
+
       {sortedPolls.length === 0 ? (
         <p className="mt-4 rounded-2xl border border-dashed border-line p-5 text-sm text-muted">
           No polls yet. Create your first one above.
         </p>
       ) : (
-        <ul className="mt-4 grid gap-4 sm:grid-cols-2">
-          {sortedPolls.map((poll) => {
-            const voteCount = votes.filter((vote) => vote.pollId === poll.id).length
-            const trip = tripTitle(poll.tripId)
-
-            return (
-              <li
-                key={poll.id}
-                className="rounded-2xl border border-line bg-white p-5"
-              >
-                <div className="flex flex-wrap items-start justify-between gap-2">
-                  <h3 className="min-w-0 break-words font-display text-lg font-bold text-brand-900">
-                    {poll.question}
-                  </h3>
-                  <span
-                    className={`rounded-full px-3 py-0.5 text-xs font-medium capitalize ${
-                      poll.status === 'open'
-                        ? 'bg-brand-50 text-brand-700'
-                        : 'bg-sage text-brand-900'
-                    }`}
-                  >
-                    {poll.status}
-                  </span>
-                </div>
-
-                <p className="mt-1 text-sm text-muted">
-                  {trip ? `Trip: ${trip} · ` : ''}
-                  {formatShortDate(poll.createdAt)} · {voteCount}{' '}
-                  {voteCount === 1 ? 'vote' : 'votes'}
-                </p>
-
-                <ul className="mt-3 space-y-1 text-sm text-charcoal">
-                  {poll.options.map((option) => (
-                    <li key={option.id} className="break-words">
-                      • {option.label}
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="mt-4">
-                  <button
-                    type="button"
-                    onClick={() => handleDelete(poll)}
-                    aria-label={`Delete poll: ${poll.question}`}
-                    className="rounded-full px-3 py-1.5 text-sm font-medium text-red-700 transition-colors hover:bg-red-50 focus-visible:outline-2 focus-visible:outline-red-700"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </li>
-            )
-          })}
+        <ul className="mt-6 grid gap-4 sm:grid-cols-2">
+          {sortedPolls.map((poll) => (
+            <PollCard
+              key={poll.id}
+              poll={poll}
+              votes={votes}
+              tripTitle={tripTitle(poll.tripId)}
+              voterName={voterName}
+              onCastVote={onCastVote}
+              onClosePoll={onClosePoll}
+              onDeletePoll={handleDelete}
+            />
+          ))}
         </ul>
       )}
     </div>

@@ -25,6 +25,7 @@ import {
   moveActivity,
   reorderActivity,
 } from './utils/itinerary'
+import { applyVote } from './utils/polls'
 import type { BudgetItem } from './types/budget'
 import type { Expense } from './types/expense'
 import type { ItineraryActivity } from './types/itinerary'
@@ -256,6 +257,25 @@ function App() {
     )
   }
 
+  function castVote(pollId: string, optionId: string, voterName: string) {
+    const poll = polls.find((p) => p.id === pollId)
+    if (!poll) return
+
+    const newVoteId = crypto.randomUUID()
+    setVotes((previousVotes) =>
+      applyVote(previousVotes, poll, optionId, voterName, newVoteId),
+    )
+  }
+
+  function closePoll(pollId: string) {
+    setPolls((previousPolls) =>
+      previousPolls.map(
+        (poll): Poll =>
+          poll.id === pollId ? { ...poll, status: 'closed' } : poll,
+      ),
+    )
+  }
+
   return (
     <Routes>
       <Route element={<Layout />}>
@@ -318,6 +338,8 @@ function App() {
               trips={trips}
               onAddPoll={addPoll}
               onDeletePoll={deletePoll}
+              onCastVote={castVote}
+              onClosePoll={closePoll}
             />
           }
         />

@@ -14,6 +14,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import SortableActivityItem from './SortableActivityItem'
+import { useConfirm } from '../ui/useConfirm'
 import type { ItineraryActivity } from '../../types/itinerary'
 import type { Trip } from '../../types/trip'
 import {
@@ -37,6 +38,7 @@ function ItinerarySection({
   onMoveActivity,
   onReorderActivity,
 }: ItinerarySectionProps) {
+  const confirm = useConfirm()
   const days = getTripDays(trip.startDate, trip.endDate)
   const tripActivities = activities.filter(
     (activity) => activity.tripId === trip.id,
@@ -49,10 +51,13 @@ function ItinerarySection({
     }),
   )
 
-  function handleDelete(activity: ItineraryActivity) {
-    const confirmed = window.confirm(
-      `Delete "${activity.title}"? This can't be undone.`,
-    )
+  async function handleDelete(activity: ItineraryActivity) {
+    const confirmed = await confirm({
+      title: 'Delete this activity?',
+      message: `"${activity.title}" will be removed from the itinerary.`,
+      confirmLabel: 'Delete activity',
+      destructive: true,
+    })
     if (!confirmed) return
 
     onDeleteActivity(activity.id)

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Users } from 'lucide-react'
 import Button from '../ui/Button'
+import { useConfirm } from '../ui/useConfirm'
 import type { Expense } from '../../types/expense'
 import type { Participant } from '../../types/participant'
 import type { Trip } from '../../types/trip'
@@ -22,6 +23,7 @@ function ParticipantsSection({
   onAddParticipant,
   onDeleteParticipant,
 }: ParticipantsSectionProps) {
+  const confirm = useConfirm()
   const [name, setName] = useState('')
   const [error, setError] = useState<string | undefined>(undefined)
   const [removeError, setRemoveError] = useState<string | undefined>(undefined)
@@ -49,7 +51,7 @@ function ParticipantsSection({
     setName('')
   }
 
-  function handleDelete(participant: Participant) {
+  async function handleDelete(participant: Participant) {
     const isInExpense = expenses.some(
       (expense) =>
         expense.tripId === trip.id &&
@@ -64,9 +66,12 @@ function ParticipantsSection({
       return
     }
 
-    const confirmed = window.confirm(
-      `Remove "${participant.name}" from this trip?`,
-    )
+    const confirmed = await confirm({
+      title: 'Remove this traveler?',
+      message: `"${participant.name}" will be removed from this trip.`,
+      confirmLabel: 'Remove',
+      destructive: true,
+    })
     if (!confirmed) return
 
     setRemoveError(undefined)

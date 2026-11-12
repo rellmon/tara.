@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import Button from '../ui/Button'
+import { useConfirm } from '../ui/useConfirm'
 import { BUDGET_CATEGORIES, BUDGET_CATEGORY_LABELS } from '../../types/budget'
 import type { BudgetCategory, BudgetItem } from '../../types/budget'
 import type { Trip } from '../../types/trip'
@@ -24,6 +25,7 @@ function BudgetSection({
   onAddItem,
   onDeleteItem,
 }: BudgetSectionProps) {
+  const confirm = useConfirm()
   const [name, setName] = useState('')
   const [category, setCategory] = useState<BudgetCategory>('transportation')
   const [amount, setAmount] = useState('')
@@ -58,10 +60,13 @@ function BudgetSection({
     setAmount('')
   }
 
-  function handleDelete(item: BudgetItem) {
-    const confirmed = window.confirm(
-      `Delete "${item.name}"? This can't be undone.`,
-    )
+  async function handleDelete(item: BudgetItem) {
+    const confirmed = await confirm({
+      title: 'Delete this budget item?',
+      message: `"${item.name}" will be removed from the budget.`,
+      confirmLabel: 'Delete item',
+      destructive: true,
+    })
     if (!confirmed) return
 
     onDeleteItem(item.id)
