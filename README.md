@@ -123,6 +123,10 @@ npm test
 
 270 tests cover the calculation and validation logic, storage behavior (including corrupted data and blocked storage), and the main user flows: creating a trip, validation messages, persistence across reloads, and cascade deletion.
 
+## Architecture
+
+How state, data, and calculations are organized, and why: see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
 ## Known limitations
 
 - **Data is stored only in your browser.** It is not shared between devices or people, and clearing site data erases it.
