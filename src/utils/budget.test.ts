@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import { sampleActivities } from '../data/sampleActivities'
 import { sampleBudgetItems } from '../data/sampleBudgetItems'
+import { sampleTrips } from '../data/sampleTrips'
 import { makeActivity, makeBudgetItem } from '../test/factories'
 import type { BudgetCategory } from '../types/budget'
+import { getTripDays } from './itinerary'
 import type { ActivityCategory } from '../types/itinerary'
 import {
   getActivityCostByDay,
@@ -150,10 +152,13 @@ describe('getActivityCostByDay', () => {
   const days = ['2026-11-14', '2026-11-15', '2026-11-16']
 
   it('adds up the sample activities on their day', () => {
-    expect(getActivityCostByDay('sample-la-union', sampleActivities, days)).toEqual({
-      '2026-11-14': 1200,
-      '2026-11-15': 0,
-      '2026-11-16': 0,
+    const trip = sampleTrips[0]
+    const sampleDays = getTripDays(trip.startDate, trip.endDate)
+
+    expect(getActivityCostByDay(trip.id, sampleActivities, sampleDays)).toEqual({
+      [sampleDays[0]]: 1200,
+      [sampleDays[1]]: 0,
+      [sampleDays[2]]: 0,
     })
   })
 

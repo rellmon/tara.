@@ -1,10 +1,13 @@
 import type { ItineraryActivity } from '../types/itinerary'
+import { sampleDates } from './sampleDates'
+
+const dayOne = sampleDates.tripDay(0)
 
 export const sampleActivities: ItineraryActivity[] = [
   {
     id: 'sample-act-1',
     tripId: 'sample-la-union',
-    date: '2026-11-14',
+    date: dayOne,
     title: 'Depart from Manila',
     locationName: 'Manila',
     startTime: '08:00',
@@ -19,7 +22,7 @@ export const sampleActivities: ItineraryActivity[] = [
   {
     id: 'sample-act-2',
     tripId: 'sample-la-union',
-    date: '2026-11-14',
+    date: dayOne,
     title: 'Lunch',
     locationName: 'Pangasinan stopover',
     startTime: '12:00',
@@ -34,7 +37,7 @@ export const sampleActivities: ItineraryActivity[] = [
   {
     id: 'sample-act-3',
     tripId: 'sample-la-union',
-    date: '2026-11-14',
+    date: dayOne,
     title: 'Check in at accommodation',
     locationName: 'San Juan, La Union',
     startTime: '14:00',
@@ -49,7 +52,7 @@ export const sampleActivities: ItineraryActivity[] = [
   {
     id: 'sample-act-4',
     tripId: 'sample-la-union',
-    date: '2026-11-14',
+    date: dayOne,
     title: 'Beach time',
     locationName: 'Urbiztondo Beach',
     startTime: '16:00',
@@ -64,7 +67,7 @@ export const sampleActivities: ItineraryActivity[] = [
   {
     id: 'sample-act-5',
     tripId: 'sample-la-union',
-    date: '2026-11-14',
+    date: dayOne,
     title: 'Dinner',
     locationName: 'San Juan, La Union',
     startTime: '18:30',

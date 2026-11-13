@@ -1,4 +1,5 @@
 import type { Expense } from '../types/expense'
+import { sampleDates } from './sampleDates'
 
 const everyone = [
   'sample-p-alex',
@@ -15,7 +16,7 @@ export const sampleExpenses: Expense[] = [
     name: 'Gasoline',
     amount: 2000,
     category: 'transportation',
-    date: '2026-11-14',
+    date: sampleDates.tripDay(0),
     paidById: 'sample-p-alex',
     sharedByIds: everyone,
     notes: '',
@@ -26,7 +27,7 @@ export const sampleExpenses: Expense[] = [
     name: 'Grocery',
     amount: 1200,
     category: 'food',
-    date: '2026-11-13',
+    date: sampleDates.tripDay(-1),
     paidById: 'sample-p-jamie',
     sharedByIds: everyone,
     notes: 'Snacks and breakfast for the house.',
@@ -37,7 +38,7 @@ export const sampleExpenses: Expense[] = [
     name: 'Accommodation deposit',
     amount: 3000,
     category: 'accommodation',
-    date: '2026-10-20',
+    date: sampleDates.tripDay(-25),
     paidById: 'sample-p-sam',
     sharedByIds: everyone,
     notes: '',
@@ -48,7 +49,7 @@ export const sampleExpenses: Expense[] = [
     name: 'Dinner at the beach',
     amount: 1200,
     category: 'food',
-    date: '2026-11-14',
+    date: sampleDates.tripDay(0),
     paidById: 'sample-p-alex',
     sharedByIds: [
       'sample-p-alex',

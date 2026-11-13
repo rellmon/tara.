@@ -1,4 +1,5 @@
 import type { Poll, Vote } from '../types/poll'
+import { sampleDates } from './sampleDates'
 
 export const samplePolls: Poll[] = [
   {
@@ -12,7 +13,7 @@ export const samplePolls: Poll[] = [
       { id: 'sample-opt-1d', label: 'Baguio' },
     ],
     status: 'open',
-    createdAt: '2026-10-08T10:00:00.000Z',
+    createdAt: sampleDates.daysAgoAt(2, 10, 0),
   },
   {
     id: 'sample-poll-2',
@@ -24,7 +25,7 @@ export const samplePolls: Poll[] = [
       { id: 'sample-opt-2c', label: 'Sunset at the lighthouse' },
     ],
     status: 'closed',
-    createdAt: '2026-10-05T08:30:00.000Z',
+    createdAt: sampleDates.daysAgoAt(5, 8, 30),
   },
 ]
 

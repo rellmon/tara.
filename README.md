@@ -89,7 +89,7 @@ Then open the URL Vite prints (usually http://localhost:5173).
 | `npm run lint` | Run ESLint |
 | `npm test` | Run all tests once |
 
-The app starts with one fictional sample trip ("Barkada La Union Escape"). To reset to the sample data, run `localStorage.clear()` in the browser console and refresh.
+The app starts with one fictional sample trip ("Barkada La Union Escape"), dated two weeks after your first visit so the dashboard always has an upcoming trip. To reset to the sample data, run `localStorage.clear()` in the browser console and refresh.
 
 ## Project structure
 
