@@ -4,7 +4,7 @@
 
 Tara is a trip-planning web app for Filipino friend groups (barkadas). Plan a trip day by day, set a budget, track and split expenses, share a packing list, and vote on where to go.
 
-> **Status:** a complete front-end app that saves data in the browser (localStorage). Accounts and a shared database are planned as the final phase, see [Roadmap](#roadmap).
+> **Status:** complete. Tara is a front-end app that saves data in your browser (localStorage), so it works without an account. Sharing a trip between people would need accounts and a shared database, which is left as possible future work, see [Roadmap](#roadmap).
 
 **Live demo:** [tara-by-zellie.vercel.app](https://tara-by-zellie.vercel.app/)
 
@@ -140,8 +140,7 @@ How state, data, and calculations are organized, and why: see [docs/ARCHITECTURE
 - [x] Trips, dashboard, itinerary, budget, expenses and splitting, packing list, polls
 - [x] Accessibility, responsive design, and automated tests
 - [x] Deploy to Vercel
-- [ ] Supabase: user accounts, a shared database, row-level security, and truly shared trips and polls
-
+- [ ] Possible future work: user accounts and a shared database (for example Supabase) so friends can work on the same trip
 ## License
 
 Personal portfolio project. Not licensed for reuse.

@@ -106,6 +106,12 @@ A static build (`vite build`) hosted on Vercel's free plan, deployed automatical
 - The JavaScript bundle is a single chunk (about 600 kB, 183 kB compressed). Route-based code splitting is possible but wasn't needed for the performance score.
 - Cover images are links to images hosted elsewhere.
 
-## What's next
+## Possible future work
 
-Supabase for accounts and a shared database: tables that mirror the lists above, row-level security so people only see trips they belong to, and a data layer that replaces the localStorage services. That also adds the loading and error states the app doesn't need today, since localStorage is synchronous.
+Tara is local-only by design, so it works instantly and needs no account. Sharing trips between people would need a backend. The groundwork is already in place:
+
+- Every list is linked by stable IDs, so it maps directly onto database tables.
+- All storage goes through the `src/services/` load and save functions, so a database could replace localStorage without touching the UI or the calculations.
+- A shared version would add accounts, row-level security so people only see trips they belong to, and loading and error states, which aren't needed today because localStorage is synchronous.
+
+One design question I worked through is that polls would need to belong to a trip, since a vote has to belong to someone who can see the poll.
